@@ -100,11 +100,11 @@ mvn jacoco:report
 
 ## Reporte de cobertura
 
-El reporte HTML generado se incluye en este repositorio. Después de clonarlo, se puede abrir directamente:
+El reporte visual de JaCoCo está disponible en:
 
-[Abrir reporte JaCoCo](target/site/jacoco/index.html)
+[Abrir reporte JaCoCo](https://prgm-code.github.io/Hito1-Java-DL/)
 
-También se puede regenerar con `mvn clean verify`; el archivo se encuentra en:
+También se puede regenerar localmente con `mvn clean verify`; el archivo se encuentra en:
 
 ```text
 target/site/jacoco/index.html
