@@ -1,12 +1,9 @@
 package com.chronus.domain;
 
 /**
- * Notificador por email.
- * Envia notificaciones a pacientes por correo.
+ * Collaborator responsible for email notifications.
  */
-
 public class EmailNotifier {
-
     public void sendEmail(String email, String message) {
     }
 }

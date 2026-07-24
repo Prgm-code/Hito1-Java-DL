@@ -1,23 +1,23 @@
 package com.chronus.domain;
 
 /**
- * Entidad de dominio que representa un pago en Chronus.
- * Encapsula el monto; el servicio de dominio ({@link PaymentService})
- * lo valida antes de persistirlo en {@link PaymentRepository}.
+ * Domain entity that represents a Chronus payment.
+ * It encapsulates the amount; {@link PaymentService} validates it before
+ * persistence through {@link PaymentRepository}.
  */
 public class Payment {
-    /** Monto del pago. */
+    /** Payment amount. */
     private final double amount;
 
     /**
-     * Crea un pago con el monto indicado.
-     * No valida reglas de negocio aquí: eso lo hace el servicio.
+     * Creates a payment with the provided amount.
+     * Business rules are validated by the domain service.
      */
     public Payment(double amount) {
         this.amount = amount;
     }
 
-    /** Devuelve el monto del pago. */
+    /** Returns the payment amount. */
     public double getAmount() {
         return amount;
     }

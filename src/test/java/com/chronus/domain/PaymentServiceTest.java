@@ -1,81 +1,98 @@
 package com.chronus.domain;
 
+import com.chronus.domain.exception.InvalidPaymentException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
-import com.chronus.domain.exception.InvalidPaymentException;
+@DisplayName("Payment service")
+@ExtendWith(MockitoExtension.class)
+class PaymentServiceTest {
 
-@DisplayName("Servicio de Pagos")
-public class PaymentServiceTest {
+    @Mock
+    private PaymentRepository paymentRepository;
 
-    /** Dummy vacío: cascarón de EmailNotifier. */
-    private static class DummyEmailNotifier extends EmailNotifier {
-        @Override
-        public void sendEmail(String email, String message) {
-            // es un cascarón
-        }
-    }
+    @Mock
+    private EmailNotifier emailNotifier;
 
-    /** Dummy vacío: cascarón de WhatsAppNotifier. */
-    private static class DummyWhatsAppNotifier extends WhatsAppNotifier {
-        @Override
-        public void sendWhatsApp(String phone, String message) {
-            // es un cascarón
-        }
-    }
+    @Mock
+    private WhatsAppNotifier whatsAppNotifier;
 
-    private final PaymentRepository paymentRepository = new PaymentRepository();
-    private final EmailNotifier dummyEmailNotifier = new DummyEmailNotifier() {
-    };
-    private final WhatsAppNotifier dummyWhatsAppNotifier = new DummyWhatsAppNotifier() {
-    };
-    private final PaymentService paymentService = new PaymentService(
-            paymentRepository,
-            dummyEmailNotifier,
-            dummyWhatsAppNotifier);
+    private PaymentService paymentService;
 
-    @Test
-    // Acepta y guarda un pago válido.
-    void shouldAcceptPayment() {
-        paymentService.acceptPayment(new Payment(100));
-        assertEquals(1, paymentRepository.findAll().size());
+    @BeforeEach
+    void setUp() {
+        paymentService = new PaymentService(paymentRepository, emailNotifier, whatsAppNotifier);
     }
 
     @Test
-    // Rechaza un pago con un monto inválido.
-    void shouldRejectPayment() {
-        assertThrows(InvalidPaymentException.class, () -> {
-            paymentService.acceptPayment(new Payment(-1));
-        });
+    void shouldStoreAndNotifyForPositiveWholePayment() {
+        // Arrange
+        Payment payment = new Payment(150);
+
+        // Act
+        paymentService.acceptPayment(payment);
+
+        // Assert
+        verify(paymentRepository).save(payment);
+        verify(emailNotifier).sendEmail(
+                "patient@chronus.com",
+                "Pago de 150 aceptado");
+        verify(whatsAppNotifier).sendWhatsApp(
+                "+56900000000",
+                "Pago de 150 aceptado");
     }
 
     @Test
-    // Rechaza un pago con un monto negativo.
-    void shouldRejectPaymentWithInvalidAmount() {
-        assertThrows(InvalidPaymentException.class, () -> {
-            paymentService.acceptPayment(new Payment(-100));
-        });
-        assertEquals(0, paymentRepository.findAll().size());
+    void shouldRejectNegativePaymentWithoutExternalInteractions() {
+        // Arrange
+        Payment payment = new Payment(-1);
+
+        // Act
+        InvalidPaymentException exception = assertThrows(
+                InvalidPaymentException.class,
+                () -> paymentService.acceptPayment(payment));
+
+        // Assert
+        assertEquals("The payment amount must be a positive whole number.", exception.getMessage());
+        verifyNoInteractions(paymentRepository, emailNotifier, whatsAppNotifier);
     }
 
     @Test
-    // Rechaza un pago con un monto cero.
-    void shouldRejectPaymentWithZeroAmount() {
-        assertThrows(InvalidPaymentException.class, () -> {
-            paymentService.acceptPayment(new Payment(0));
-        });
-        assertEquals(0, paymentRepository.findAll().size());
+    void shouldRejectZeroPaymentWithoutExternalInteractions() {
+        // Arrange
+        Payment payment = new Payment(0);
+
+        // Act
+        InvalidPaymentException exception = assertThrows(
+                InvalidPaymentException.class,
+                () -> paymentService.acceptPayment(payment));
+
+        // Assert
+        assertEquals("The payment amount must be a positive whole number.", exception.getMessage());
+        verifyNoInteractions(paymentRepository, emailNotifier, whatsAppNotifier);
     }
 
     @Test
-    // Rechaza un pago con un monto decimal.
-    void shouldRejectPaymentWithDecimalAmount() {
-        assertThrows(InvalidPaymentException.class, () -> {
-            paymentService.acceptPayment(new Payment(100.50));
-        });
-        assertEquals(0, paymentRepository.findAll().size());
+    void shouldRejectFractionalPaymentWithoutExternalInteractions() {
+        // Arrange
+        Payment payment = new Payment(100.50);
+
+        // Act
+        InvalidPaymentException exception = assertThrows(
+                InvalidPaymentException.class,
+                () -> paymentService.acceptPayment(payment));
+
+        // Assert
+        assertEquals("The payment amount must be a positive whole number.", exception.getMessage());
+        verifyNoInteractions(paymentRepository, emailNotifier, whatsAppNotifier);
     }
 }

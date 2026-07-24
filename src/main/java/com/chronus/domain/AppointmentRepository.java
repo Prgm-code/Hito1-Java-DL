@@ -3,24 +3,22 @@ package com.chronus.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * In-memory repository for storing and retrieving appointments.
+ */
 public class AppointmentRepository {
-    /** Citas actualmente registradas en memoria. */
     private final List<Appointment> appointments = new ArrayList<>();
 
     /**
-     * Persiste una cita en el repositorio.
-     * Se espera recibir una cita ya validada por la capa de dominio
-     * (por ejemplo, con fecha futura).
+     * Stores a validated appointment.
      */
-
     public void save(Appointment appointment) {
         appointments.add(appointment);
     }
 
     /**
-     * Devuelve una copia inmutable de todas las citas guardadas.
+     * Returns all stored appointments.
      */
-
     public List<Appointment> findAll() {
         return List.copyOf(appointments);
     }

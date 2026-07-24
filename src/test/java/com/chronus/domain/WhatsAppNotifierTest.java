@@ -9,11 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.startsWith;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-@DisplayName("WhatsAppNotifier")
+@DisplayName("WhatsApp notifier")
 @ExtendWith(MockitoExtension.class)
 class WhatsAppNotifierTest {
 
@@ -21,47 +19,41 @@ class WhatsAppNotifierTest {
     private WhatsAppNotifier whatsAppNotifier;
 
     @Test
-    @DisplayName("Verifica envío con anyString")
-    void shouldVerifySendWhatsAppWithAnyString() {
-        // Arrange & Act
-        whatsAppNotifier.sendWhatsApp("+56912345678", "Cita confirmada");
+    void shouldVerifyWhatsAppNotificationWithMock() {
+        // Arrange
+        String phoneNumber = "+56912345678";
+        String message = "Recordatorio: su cita está programada para mañana.";
+
+        // Act
+        whatsAppNotifier.sendWhatsApp(phoneNumber, message);
 
         // Assert
         verify(whatsAppNotifier).sendWhatsApp(anyString(), anyString());
     }
 
     @Test
-    @DisplayName("Verifica destino con eq y mensaje con contains")
-    void shouldVerifyDestinationAndMessageWithEqAndContains() {
-        // Arrange & Act
-        whatsAppNotifier.sendWhatsApp("+56912345678", "Cita confirmada para mañana");
+    void shouldVerifySpanishWhatsAppMessageWithMock() {
+        // Arrange
+        String phoneNumber = "+56912345678";
+        String message = "Pago de 150 aceptado";
+
+        // Act
+        whatsAppNotifier.sendWhatsApp(phoneNumber, message);
 
         // Assert
-        verify(whatsAppNotifier).sendWhatsApp(
-                eq("+56912345678"),
-                contains("Cita confirmada"));
+        verify(whatsAppNotifier).sendWhatsApp(eq(phoneNumber), contains("Pago de"));
     }
 
     @Test
-    @DisplayName("Verifica mensaje con startsWith")
-    void shouldVerifyMessageWithStartsWith() {
-        // Arrange & Act
-        whatsAppNotifier.sendWhatsApp("+56912345678", "Payment of 100 accepted");
-
-        // Assert
-        verify(whatsAppNotifier).sendWhatsApp(anyString(), startsWith("Payment of"));
-    }
-
-    @Test
-    @DisplayName("No debe haber sido invocado (never + anyString)")
-    void shouldNeverHaveBeenCalled() {
-        verify(whatsAppNotifier, never()).sendWhatsApp(anyString(), anyString());
-    }
-
-    @Test
-    @DisplayName("Cubre la implementación real de WhatsAppNotifier")
-    void shouldCoverRealWhatsAppNotifier() {
+    void shouldExecuteConcreteWhatsAppNotifier() {
+        // Arrange
         WhatsAppNotifier notifier = new WhatsAppNotifier();
-        notifier.sendWhatsApp("+56912345678", "Cita confirmada");
+
+        // Act
+        notifier.sendWhatsApp(
+                "+56912345678",
+                "Recordatorio: su cita está programada para mañana.");
+
+        // Assert
     }
 }

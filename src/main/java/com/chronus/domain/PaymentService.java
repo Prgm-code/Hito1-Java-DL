@@ -3,20 +3,19 @@ package com.chronus.domain;
 import com.chronus.domain.exception.InvalidPaymentException;
 
 /**
- * Servicio de dominio para gestionar pagos en Chronus.
- * Contiene las reglas de negocio (validaciones), delega la
- * persistencia en {@link PaymentRepository} y notifica mediante
- * {@link EmailNotifier} y {@link WhatsAppNotifier}.
+ * Domain service that manages Chronus payments.
+ * It contains business validations, delegates persistence to
+ * {@link PaymentRepository}, and sends notifications through
+ * {@link EmailNotifier} and {@link WhatsAppNotifier}.
  */
 public class PaymentService {
-    /** Repositorio donde se guardan los pagos validados. */
+    /** Collaborators used by the payment workflow. */
     private final PaymentRepository paymentRepository;
     private final EmailNotifier emailNotifier;
     private final WhatsAppNotifier whatsAppNotifier;
 
     /**
-     * Inyecta repositorio y notificadores por constructor.
-     * Facilita pruebas con dobles o con la implementación en memoria.
+     * Injects repository and notification collaborators through the constructor.
      */
     public PaymentService(
             PaymentRepository paymentRepository,
@@ -28,10 +27,9 @@ public class PaymentService {
     }
 
     /**
-     * Acepta un pago si su monto es un entero estrictamente positivo.
-     * Si el monto es cero, negativo o decimal lanza
-     * {@link InvalidPaymentException} y no lo persiste.
-     * Si es válido, lo guarda y envía notificaciones.
+     * Accepts a payment only when its amount is a strictly positive whole number.
+     * Zero, negative, or fractional amounts raise {@link InvalidPaymentException}
+     * and are not persisted. Valid payments are stored and notified.
      */
     public void acceptPayment(Payment payment) {
         double amount = payment.getAmount();
@@ -40,7 +38,7 @@ public class PaymentService {
                     "The payment amount must be a positive whole number.");
         }
         paymentRepository.save(payment);
-        String message = "Payment of " + (int) amount + " accepted";
+        String message = "Pago de " + (int) amount + " aceptado";
         emailNotifier.sendEmail("patient@chronus.com", message);
         whatsAppNotifier.sendWhatsApp("+56900000000", message);
     }

@@ -1,73 +1,61 @@
 package com.chronus.domain;
 
+import com.chronus.domain.exception.InvalidPaymentException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.chronus.domain.exception.InvalidPaymentException;
+@DisplayName("Payment service with dummies")
+class PaymentServiceDummyTest {
 
-@DisplayName("Servicio de Pagos - Dummy")
-public class PaymentServiceDummyTest {
-
-    /** Dummy vacío: cascarón de EmailNotifier. */
     private static class DummyEmailNotifier extends EmailNotifier {
         @Override
         public void sendEmail(String email, String message) {
-            // es un cascarón
         }
     }
 
-    /** Dummy vacío: cascarón de WhatsAppNotifier. */
     private static class DummyWhatsAppNotifier extends WhatsAppNotifier {
         @Override
         public void sendWhatsApp(String phone, String message) {
-            // es un cascarón
         }
     }
 
     @Test
-    @DisplayName("Debe aceptar un pago válido usando dummies")
-    void shouldAcceptValidPaymentWithDummyNotifiers() {
+    void shouldStoreValidPaymentUsingDummyNotifiers() {
         // Arrange
-        PaymentRepository repository = new PaymentRepository();
-        EmailNotifier dummyEmailNotifier = new DummyEmailNotifier() {
-        };
-        WhatsAppNotifier dummyWhatsAppNotifier = new DummyWhatsAppNotifier() {
-        };
+        PaymentRepository paymentRepository = new PaymentRepository();
         PaymentService paymentService = new PaymentService(
-                repository,
-                dummyEmailNotifier,
-                dummyWhatsAppNotifier);
+                paymentRepository,
+                new DummyEmailNotifier(),
+                new DummyWhatsAppNotifier());
+        Payment payment = new Payment(100);
 
         // Act
-        paymentService.acceptPayment(new Payment(100));
+        paymentService.acceptPayment(payment);
 
         // Assert
-        assertEquals(1, repository.findAll().size());
+        assertEquals(1, paymentRepository.findAll().size());
+        assertEquals(payment, paymentRepository.findAll().get(0));
     }
 
     @Test
-    @DisplayName("Debe rechazar un pago inválido usando dummies")
-    void shouldRejectInvalidPaymentWithDummyNotifiers() {
+    void shouldRejectInvalidPaymentUsingDummyNotifiers() {
         // Arrange
-        PaymentRepository repository = new PaymentRepository();
-        EmailNotifier dummyEmailNotifier = new DummyEmailNotifier() {
-        };
-        WhatsAppNotifier dummyWhatsAppNotifier = new DummyWhatsAppNotifier() {
-        };
+        PaymentRepository paymentRepository = new PaymentRepository();
         PaymentService paymentService = new PaymentService(
-                repository,
-                dummyEmailNotifier,
-                dummyWhatsAppNotifier);
+                paymentRepository,
+                new DummyEmailNotifier(),
+                new DummyWhatsAppNotifier());
 
         // Act
-        assertThrows(InvalidPaymentException.class, () -> {
-            paymentService.acceptPayment(new Payment(-1));
-        });
+        InvalidPaymentException exception = assertThrows(
+                InvalidPaymentException.class,
+                () -> paymentService.acceptPayment(new Payment(-1)));
 
         // Assert
-        assertEquals(0, repository.findAll().size());
+        assertEquals("The payment amount must be a positive whole number.", exception.getMessage());
+        assertEquals(0, paymentRepository.findAll().size());
     }
 }

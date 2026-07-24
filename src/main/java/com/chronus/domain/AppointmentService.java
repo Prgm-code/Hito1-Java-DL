@@ -6,17 +6,16 @@ import com.chronus.domain.exception.OccupiedAppointmentException;
 import java.time.LocalDateTime;
 
 /**
- * Servicio de dominio para gestionar citas en Chronus.
- * Contiene las reglas de negocio (validaciones) y delega la
- * persistencia en {@link AppointmentRepository}.
+ * Domain service that manages Chronus appointments.
+ * It contains business validations and delegates persistence to
+ * {@link AppointmentRepository}.
  */
 public class AppointmentService {
-    /** Repositorio donde se guardan las citas validadas. */
+    /** Repository used to store validated appointments. */
     private final AppointmentRepository appointmentRepository;
 
     /**
-     * Inyecta el repositorio por constructor.
-     * Facilita pruebas con dobles o con la implementación en memoria.
+     * Injects the repository through the constructor.
      */
     public AppointmentService(AppointmentRepository appointmentRepository) {
         this.appointmentRepository = appointmentRepository;
@@ -29,7 +28,6 @@ public class AppointmentService {
         }
         boolean collision = appointmentRepository.findAll().stream()
                 .anyMatch(existing -> existing.getDateTime().equals(appointment.getDateTime()));
-        // Si hay colisión, lanza una excepción Ocupado.
         if (collision) {
             throw new OccupiedAppointmentException(
                     "An appointment already exists at this date and time.");

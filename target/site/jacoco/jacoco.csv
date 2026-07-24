@@ -1,0 +1,15 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+chronus,com.chronus.domain.exception,OccupiedAppointmentException,0,4,0,0,0,2,0,1,0,1
+chronus,com.chronus.domain.exception,InvalidPatientDataException,0,4,0,0,0,2,0,1,0,1
+chronus,com.chronus.domain.exception,InvalidDateAppointmentException,0,4,0,0,0,2,0,1,0,1
+chronus,com.chronus.domain.exception,InvalidPaymentException,0,4,0,0,0,2,0,1,0,1
+chronus,com.chronus.domain,Appointment,0,9,0,0,0,4,0,2,0,2
+chronus,com.chronus.domain,AppointmentService,0,42,0,4,0,11,0,5,0,3
+chronus,com.chronus.domain,PaymentService,0,48,0,4,0,13,0,4,0,2
+chronus,com.chronus.domain,Payment,0,9,0,0,0,4,0,2,0,2
+chronus,com.chronus.domain,EmailNotifier,0,4,0,0,0,2,0,2,0,2
+chronus,com.chronus.domain,PaymentRepository,0,18,0,0,0,5,0,3,0,3
+chronus,com.chronus.domain,Patient,0,42,0,4,0,14,0,7,0,5
+chronus,com.chronus.domain,WhatsAppNotifier,0,4,0,0,0,2,0,2,0,2
+chronus,com.chronus.domain,AppointmentReminder,0,27,0,0,0,9,0,2,0,2
+chronus,com.chronus.domain,AppointmentRepository,0,18,0,0,0,5,0,3,0,3

@@ -1,66 +1,83 @@
 package com.chronus.domain;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.time.LocalDateTime;
-
 import com.chronus.domain.exception.InvalidDateAppointmentException;
 import com.chronus.domain.exception.OccupiedAppointmentException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@DisplayName("Appointment Service")
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+@DisplayName("Appointment service")
+@ExtendWith(MockitoExtension.class)
 class AppointmentServiceTest {
 
-    private AppointmentRepository appointmentRepository = new AppointmentRepository();
-    private AppointmentService appointmentService = new AppointmentService(appointmentRepository);
+    @Mock
+    private AppointmentRepository appointmentRepository;
 
-    // Rechaza una cita con fecha en el pasado y no la persiste.
+    private AppointmentService appointmentService;
+
+    @BeforeEach
+    void setUp() {
+        appointmentService = new AppointmentService(appointmentRepository);
+    }
+
     @Test
-    void shouldRejectPastAppointment() {
+    void shouldRejectPastAppointmentWithoutAccessingRepository() {
         // Arrange
         Appointment appointment = new Appointment(LocalDateTime.now().minusDays(1));
 
-        // Act &
-        assertThrows(InvalidDateAppointmentException.class, () -> {
-            appointmentService.createAppointment(appointment);
-        });
+        // Act
+        InvalidDateAppointmentException exception = assertThrows(
+                InvalidDateAppointmentException.class,
+                () -> appointmentService.createAppointment(appointment));
 
         // Assert
-        assertEquals(0, appointmentRepository.findAll().size());
+        assertEquals("The appointment date and time must be in the future.", exception.getMessage());
+        verifyNoInteractions(appointmentRepository);
     }
 
-    // Acepta y guarda una cita con fecha futura válida.
     @Test
-    void shouldAcceptFutureAppointment() {
+    void shouldStoreFutureAppointmentWhenThereIsNoCollision() {
         // Arrange
-        Appointment appointment = new Appointment(LocalDateTime.now().plusDays(1));
+        Appointment appointment = new Appointment(LocalDateTime.now().plusMinutes(1));
+        when(appointmentRepository.findAll()).thenReturn(List.of());
 
-        // Act &
+        // Act
         appointmentService.createAppointment(appointment);
 
         // Assert
-        assertEquals(1, appointmentRepository.findAll().size());
+        verify(appointmentRepository).findAll();
+        verify(appointmentRepository).save(appointment);
     }
 
-    // Rechaza una segunda cita en la misma fecha/hora (colisión) y deja solo la
-    // primera.
     @Test
-    void shouldRejectAppointmentWithSameDateTime() {
+    void shouldRejectAppointmentWhenDateTimeIsOccupied() {
         // Arrange
-        LocalDateTime dateTime = LocalDateTime.now().plusDays(1);
+        LocalDateTime dateTime = LocalDateTime.now().plusMinutes(1);
+        Appointment existingAppointment = new Appointment(dateTime);
         Appointment appointment = new Appointment(dateTime);
-        Appointment appointment2 = new Appointment(dateTime);
-        // Act &
-        appointmentService.createAppointment(appointment);
-        assertThrows(OccupiedAppointmentException.class, () -> {
-            appointmentService.createAppointment(appointment2);
-        });
+        when(appointmentRepository.findAll()).thenReturn(List.of(existingAppointment));
+
+        // Act
+        OccupiedAppointmentException exception = assertThrows(
+                OccupiedAppointmentException.class,
+                () -> appointmentService.createAppointment(appointment));
 
         // Assert
-        assertEquals(1, appointmentRepository.findAll().size());
+        assertEquals("An appointment already exists at this date and time.", exception.getMessage());
+        verify(appointmentRepository).findAll();
+        verify(appointmentRepository, never()).save(appointment);
     }
-
 }

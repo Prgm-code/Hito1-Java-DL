@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PaymentService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chronus</a> &gt; <a href="index.source.html" class="el_package">com.chronus.domain</a> &gt; <span class="el_source">PaymentService.java</span></div><h1>PaymentService.java</h1><pre class="source lang-java linenums">package com.chronus.domain;
+
+import com.chronus.domain.exception.InvalidPaymentException;
+
+/**
+ * Domain service that manages Chronus payments.
+ * It contains business validations, delegates persistence to
+ * {@link PaymentRepository}, and sends notifications through
+ * {@link EmailNotifier} and {@link WhatsAppNotifier}.
+ */
+public class PaymentService {
+    /** Collaborators used by the payment workflow. */
+    private final PaymentRepository paymentRepository;
+    private final EmailNotifier emailNotifier;
+    private final WhatsAppNotifier whatsAppNotifier;
+
+    /**
+     * Injects repository and notification collaborators through the constructor.
+     */
+    public PaymentService(
+            PaymentRepository paymentRepository,
+            EmailNotifier emailNotifier,
+<span class="fc" id="L23">            WhatsAppNotifier whatsAppNotifier) {</span>
+<span class="fc" id="L24">        this.paymentRepository = paymentRepository;</span>
+<span class="fc" id="L25">        this.emailNotifier = emailNotifier;</span>
+<span class="fc" id="L26">        this.whatsAppNotifier = whatsAppNotifier;</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * Accepts a payment only when its amount is a strictly positive whole number.
+     * Zero, negative, or fractional amounts raise {@link InvalidPaymentException}
+     * and are not persisted. Valid payments are stored and notified.
+     */
+    public void acceptPayment(Payment payment) {
+<span class="fc" id="L35">        double amount = payment.getAmount();</span>
+<span class="fc bfc" id="L36" title="All 4 branches covered.">        if (amount &lt;= 0 || amount != Math.floor(amount)) {</span>
+<span class="fc" id="L37">            throw new InvalidPaymentException(</span>
+                    &quot;The payment amount must be a positive whole number.&quot;);
+        }
+<span class="fc" id="L40">        paymentRepository.save(payment);</span>
+<span class="fc" id="L41">        String message = &quot;Pago de &quot; + (int) amount + &quot; aceptado&quot;;</span>
+<span class="fc" id="L42">        emailNotifier.sendEmail(&quot;patient@chronus.com&quot;, message);</span>
+<span class="fc" id="L43">        whatsAppNotifier.sendWhatsApp(&quot;+56900000000&quot;, message);</span>
+<span class="fc" id="L44">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

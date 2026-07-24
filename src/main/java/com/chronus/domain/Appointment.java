@@ -3,18 +3,18 @@ package com.chronus.domain;
 import java.time.LocalDateTime;
 
 public class Appointment {
-    /** Fecha y hora programada del turno. */
+    /** Scheduled appointment date and time. */
     private final LocalDateTime dateTime;
 
     /**
-     * Crea una cita con la fecha y hora indicadas.
-     * No valida reglas de negocio aquí: eso lo hace el servicio.
+     * Creates an appointment with the provided date and time.
+     * Business rules are validated by the domain service.
      */
     public Appointment(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
 
-    /** Devuelve la fecha y hora del turno. */
+    /** Returns the scheduled appointment date and time. */
     public LocalDateTime getDateTime() {
         return dateTime;
     }

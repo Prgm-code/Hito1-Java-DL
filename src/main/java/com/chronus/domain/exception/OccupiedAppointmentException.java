@@ -1,8 +1,7 @@
 package com.chronus.domain.exception;
 
 /**
- * Se lanza cuando se intenta agendar una cita en una fecha/hora
- * que ya está ocupada por otra cita.
+ * Raised when an appointment is requested for an occupied date and time.
  */
 public class OccupiedAppointmentException extends RuntimeException {
     public OccupiedAppointmentException(String message) {
