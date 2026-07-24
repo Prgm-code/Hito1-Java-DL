@@ -110,11 +110,11 @@ También se puede regenerar localmente con `mvn clean verify`; el archivo se enc
 target/site/jacoco/index.html
 ```
 
-![Reporte JaCoCo con 100% de cobertura](image.png)
+[![Reporte JaCoCo con 100% de cobertura](image.png)](https://prgm-code.github.io/Hito1-Java-DL/)
 
 El mismo resumen se imprime automáticamente en la terminal mediante `jacoco-console-reporter`.
 
-![Resumen de cobertura en consola](jacoco-console.png)
+[![Resumen de cobertura en consola](jacoco-console.png)](https://prgm-code.github.io/Hito1-Java-DL/)
 
 ---
 
