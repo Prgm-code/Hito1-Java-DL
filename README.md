@@ -16,7 +16,7 @@ En un centro de salud, coordinar horarios, mantener los datos de contacto de los
 
 ## Reglas de negocio
 
-El núcleo de la aplicación se distribuye entre `AppointmentService`, `PaymentService` y `AppointmentReminder`.
+El núcleo de la aplicación se orquesta desde `CreateAppointmentService`, `AcceptPaymentService` y `SendAppointmentReminderService`.
 
 1. **Fecha de cita válida:** una cita debe estar estrictamente en el futuro. Una fecha pasada o igual al momento actual genera `InvalidDateAppointmentException`.
 2. **Sin colisiones:** no se pueden registrar dos citas en la misma fecha y hora. La segunda solicitud genera `OccupiedAppointmentException`.
@@ -28,11 +28,13 @@ El núcleo de la aplicación se distribuye entre `AppointmentService`, `PaymentS
 
 ## Decisiones de diseño y arquitectura
 
-- **Dominio puro:** las entidades `Appointment`, `Patient` y `Payment` usan únicamente Java estándar y no tienen anotaciones de Spring, JPA ni dependencias web.
-- **Reglas centralizadas:** los servicios de dominio contienen las validaciones, persistencia en memoria y preparación de notificaciones.
-- **Inyección por constructor:** los repositorios y notificadores se entregan a los servicios mediante sus constructores, facilitando el reemplazo por dobles de prueba.
-- **Doubles de prueba:** la suite combina mocks de Mockito, dummies y repositorios en memoria según el escenario que se evalúa.
-- **Excepciones propias:** las reglas inválidas se representan mediante excepciones específicas, sin mezclar la lógica con valores de error genéricos.
+- **Tres capas:** `domain` (modelo y contratos), `application` (casos de uso) e `infrastructure` (adaptadores). El dominio no importa aplicación ni infraestructura.
+- **Java puro en el núcleo:** `domain` y `application` no usan Spring, JPA ni Jackson. No hay `@Service`, `@Repository` ni `@Entity` de framework.
+- **Casos de uso como contrato:** cada acción de negocio es una interfaz en `application.usecase` implementada por un servicio en `application.service`.
+- **Repositorios como frontera:** las interfaces viven en `domain.repository`. Las listas en memoria están en `infrastructure.persistence`.
+- **Inyección por constructor:** los servicios de aplicación reciben repositorios y puertos de notificación, nunca las clases concretas.
+- **Doubles de prueba:** la suite combina mocks de Mockito, dummies y repositorios en memoria.
+- **Regla de dependencia:** `ArchitectureTest` (ArchUnit) falla el build si dominio o aplicación se acopla a infraestructura o a un framework.
 
 ---
 
@@ -48,12 +50,12 @@ Las pruebas automatizadas siguen el patrón **Arrange – Act – Assert (AAA)**
 | Recordatorios | Envío por email y WhatsApp con los datos de `Juanito Pérez` |
 | Colaboradores | Repositorios, notificador por email, notificador por WhatsApp, dummies y mocks |
 
-La última ejecución de la suite valida **24 pruebas** y el reporte JaCoCo del paquete de dominio marca:
+La última ejecución de la suite valida **31 pruebas** (incluye 5 reglas ArchUnit) y el reporte JaCoCo de `com.chronus` marca:
 
-- **100% Class Coverage** — 14/14 clases.
-- **100% Method Coverage** — 30/30 métodos.
+- **100% Class Coverage** — 15/15 clases.
+- **100% Method Coverage** — 32/32 métodos.
 - **100% Branch Coverage** — 12/12 ramas.
-- **100% Line Coverage** — 77/77 líneas.
+- **100% Line Coverage** — 79/79 líneas.
 
 Además, `jacoco:check` hace fallar el build si la cobertura de líneas o ramas baja de 100%.
 
@@ -122,40 +124,22 @@ El mismo resumen se imprime automáticamente en la terminal mediante `jacoco-con
 
 ```text
 chronus/
-├── src/
-│   ├── main/
-│   │   └── java/
-│   │       └── com/chronus/domain/
-│   │           ├── exception/
-│   │           │   ├── InvalidDateAppointmentException.java
-│   │           │   ├── InvalidPatientDataException.java
-│   │           │   ├── InvalidPaymentException.java
-│   │           │   └── OccupiedAppointmentException.java
-│   │           ├── Appointment.java
-│   │           ├── AppointmentReminder.java
-│   │           ├── AppointmentRepository.java
-│   │           ├── AppointmentService.java
-│   │           ├── EmailNotifier.java
-│   │           ├── Patient.java
-│   │           ├── Payment.java
-│   │           ├── PaymentRepository.java
-│   │           ├── PaymentService.java
-│   │           └── WhatsAppNotifier.java
-│   └── test/
-│       └── java/
-│           └── com/chronus/domain/
-│               ├── AppointmentReminderTest.java
-│               ├── AppointmentRepositoryTest.java
-│               ├── AppointmentServiceTest.java
-│               ├── EmailNotifierTest.java
-│               ├── PatientTest.java
-│               ├── PaymentRepositoryTest.java
-│               ├── PaymentServiceDummyTest.java
-│               ├── PaymentServiceMockitoTest.java
-│               ├── PaymentServiceTest.java
-│               └── WhatsAppNotifierTest.java
-├── pom.xml
-└── README.md
+├── src/main/java/com/chronus/
+│   ├── application/
+│   │   ├── port/          EmailNotifier, WhatsAppNotifier
+│   │   ├── service/       CreateAppointmentService, AcceptPaymentService,
+│   │   │                  SendAppointmentReminderService
+│   │   └── usecase/       contratos de los casos de uso
+│   ├── domain/
+│   │   ├── entity/        Appointment, Patient, Payment
+│   │   ├── exception/
+│   │   ├── repository/    interfaces AppointmentRepository, PaymentRepository
+│   │   ├── service/       AppointmentConflictChecker
+│   │   └── valueobject/
+│   └── infrastructure/
+│       ├── notification/  NoOpEmailNotifier, NoOpWhatsAppNotifier
+│       └── persistence/   InMemoryAppointmentRepository, InMemoryPaymentRepository
+└── src/test/java/com/chronus/   espejo de los mismos paquetes
 ```
 
 ---
@@ -166,4 +150,5 @@ chronus/
 - Maven
 - JUnit 5
 - Mockito
+- ArchUnit
 - JaCoCo
