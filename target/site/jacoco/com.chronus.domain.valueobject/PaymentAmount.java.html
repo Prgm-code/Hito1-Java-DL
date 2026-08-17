@@ -8,7 +8,7 @@ public record PaymentAmount(double value) {
 <span class="fc" id="L8">    public PaymentAmount {</span>
 <span class="fc bfc" id="L9" title="All 6 branches covered.">        if (!Double.isFinite(value) || value &lt;= 0 || value != Math.floor(value)) {</span>
 <span class="fc" id="L10">            throw new InvalidPaymentException(</span>
-<span class="fc" id="L11">                    &quot;The payment amount must be a positive whole number.&quot;);</span>
+                    &quot;The payment amount must be a positive whole number.&quot;);
         }
         // el value se asigna directamente al constructor, no se necesita sanitizar
         // value = value;
