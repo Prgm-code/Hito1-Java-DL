@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CreateAppointmentService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chronus</a> &gt; <a href="index.source.html" class="el_package">com.chronus.application.service</a> &gt; <span class="el_source">CreateAppointmentService.java</span></div><h1>CreateAppointmentService.java</h1><pre class="source lang-java linenums">package com.chronus.application.service;
+
+import com.chronus.application.usecase.CreateAppointmentUseCase;
+import com.chronus.domain.entity.Appointment;
+import com.chronus.domain.exception.OccupiedAppointmentException;
+import com.chronus.domain.repository.AppointmentRepository;
+import com.chronus.domain.service.AppointmentConflictChecker;
+
+// servicio de aplicacion que valida las reglas de programacion de citas y persiste las citas en el repositorio
+public class CreateAppointmentService implements CreateAppointmentUseCase {
+    private final AppointmentRepository appointmentRepository;
+    private final AppointmentConflictChecker appointmentConflictChecker;
+
+    public CreateAppointmentService(
+            AppointmentRepository appointmentRepository,
+<span class="fc" id="L16">            AppointmentConflictChecker appointmentConflictChecker) {</span>
+<span class="fc" id="L17">        this.appointmentRepository = appointmentRepository;</span>
+<span class="fc" id="L18">        this.appointmentConflictChecker = appointmentConflictChecker;</span>
+<span class="fc" id="L19">    }</span>
+
+    @Override
+    public void createAppointment(Appointment appointment) {
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        if (appointmentConflictChecker.isOccupied(appointment, appointmentRepository.findAll())) {</span>
+<span class="fc" id="L24">            throw new OccupiedAppointmentException(</span>
+                    &quot;An appointment already exists at this date and time.&quot;);
+        }
+<span class="fc" id="L27">        appointmentRepository.save(appointment);</span>
+<span class="fc" id="L28">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

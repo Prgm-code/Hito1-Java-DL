@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InMemoryPatientRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chronus</a> &gt; <a href="index.source.html" class="el_package">com.chronus.infrastructure.persistence</a> &gt; <span class="el_source">InMemoryPatientRepository.java</span></div><h1>InMemoryPatientRepository.java</h1><pre class="source lang-java linenums">package com.chronus.infrastructure.persistence;
+
+import com.chronus.domain.entity.Patient;
+import com.chronus.domain.repository.PatientRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * In-memory adapter for {@link PatientRepository}.
+ */
+<span class="fc" id="L13">public class InMemoryPatientRepository implements PatientRepository {</span>
+<span class="fc" id="L14">    private final List&lt;Patient&gt; patients = new ArrayList&lt;&gt;();</span>
+
+    @Override
+    public void save(Patient patient) {
+<span class="fc" id="L18">        patients.add(patient);</span>
+<span class="fc" id="L19">    }</span>
+
+    @Override
+    public Patient findById(String id) {
+<span class="fc" id="L23">        return patients.stream()</span>
+<span class="fc" id="L24">                .filter(patient -&gt; Objects.equals(patient.getPatientId(), id))</span>
+<span class="fc" id="L25">                .findFirst()</span>
+<span class="fc" id="L26">                .orElse(null);</span>
+    }
+
+    @Override
+    public List&lt;Patient&gt; findAll() {
+<span class="fc" id="L31">        return List.copyOf(patients);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
