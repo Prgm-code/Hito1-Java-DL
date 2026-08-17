@@ -45,13 +45,13 @@ Cada value object valida sus reglas en el constructor compacto. Las entidades cr
 
 ### 3. Desacoplamiento por contratos de repositorios
 
-`AppointmentRepository` y `PaymentRepository` viven en `domain.repository` y funcionan como contratos de persistencia. Sus implementaciones en memoria viven en `infrastructure.persistence`. Los servicios de aplicación reciben repositorios y puertos mediante inyección por constructor.
+`AppointmentRepository`, `PatientRepository` y `PaymentRepository` viven en `domain.repository` y funcionan como contratos de persistencia. Sus implementaciones en memoria viven en `infrastructure.persistence`. Los servicios de aplicación reciben repositorios y puertos mediante inyección por constructor.
 
 ---
 
 ## Reglas de negocio
 
-El núcleo de la aplicación se orquesta desde `CreateAppointmentService`, `AcceptPaymentService` y `SendAppointmentReminderService`.
+El núcleo de la aplicación se orquesta desde `CreatePatientService`, `CreateAppointmentService`, `AcceptPaymentService` y `SendAppointmentReminderService`.
 
 1. **Fecha de cita válida:** una cita debe estar estrictamente en el futuro. Una fecha pasada o igual al momento actual genera `InvalidDateAppointmentException`.
 2. **Sin colisiones:** no se pueden registrar dos citas en la misma fecha y hora. La segunda solicitud genera `OccupiedAppointmentException`.
@@ -66,7 +66,7 @@ El núcleo de la aplicación se orquesta desde `CreateAppointmentService`, `Acce
 - **Tres capas:** `domain` (modelo y contratos), `application` (casos de uso) e `infrastructure` (adaptadores). El dominio no importa aplicación ni infraestructura.
 - **Java puro en el núcleo:** `domain` y `application` no usan Spring, JPA ni Jackson. No hay `@Service`, `@Repository` ni `@Entity` de framework.
 - **Casos de uso como contrato:** cada acción de negocio es una interfaz en `application.usecase` implementada por un servicio en `application.service`.
-- **Repositorios como frontera:** las interfaces viven en `domain.repository`. Las listas en memoria están en `infrastructure.persistence`.
+- **Repositorios como frontera:** las interfaces viven en `domain.repository`. Las listas en memoria están en `infrastructure.persistence`, incluyendo la creación y consulta de pacientes.
 - **Inyección por constructor:** los servicios de aplicación reciben repositorios y puertos de notificación, nunca las clases concretas.
 - **Doubles de prueba:** la suite combina mocks de Mockito, dummies y repositorios en memoria.
 - **Regla de dependencia:** `ArchitectureTest` (ArchUnit) falla el build si dominio o aplicación se acopla a infraestructura o a un framework.
@@ -133,20 +133,22 @@ chronus/
 ├── src/main/java/com/chronus/
 │   ├── application/
 │   │   ├── port/          EmailNotifier, WhatsAppNotifier
-│   │   ├── service/       CreateAppointmentService, AcceptPaymentService,
-│   │   │                  SendAppointmentReminderService
+│   │   ├── service/       CreatePatientService, CreateAppointmentService,
+│   │   │                  AcceptPaymentService, SendAppointmentReminderService
 │   │   └── usecase/       contratos de los casos de uso
 │   ├── domain/
 │   │   ├── entity/        Appointment, Patient, Payment
 │   │   ├── exception/
-│   │   ├── repository/    interfaces AppointmentRepository, PaymentRepository
+│   │   ├── repository/    interfaces AppointmentRepository, PatientRepository,
+│   │   │                  PaymentRepository
 │   │   ├── service/       AppointmentConflictChecker
 │   │   └── valueobject/   PatientId, FullName, Email, PhoneNumber,
 │   │                      AppointmentId, AppointmentDateTime,
 │   │                      PaymentId, PaymentAmount
 │   └── infrastructure/
 │       ├── notification/  NoOpEmailNotifier, NoOpWhatsAppNotifier
-│       └── persistence/   InMemoryAppointmentRepository, InMemoryPaymentRepository
+│       └── persistence/   InMemoryAppointmentRepository, InMemoryPatientRepository,
+│                          InMemoryPaymentRepository
 └── src/test/java/com/chronus/   espejo de los mismos paquetes
 ```
 
