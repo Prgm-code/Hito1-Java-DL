@@ -6,12 +6,11 @@ import com.chronus.domain.exception.InvalidPaymentException;
 public record PaymentAmount(double value) {
 
     public PaymentAmount {
-        double cleanValue = Math.floor(value);
-        if (!Double.isFinite(cleanValue) || cleanValue <= 0 || cleanValue != Math.floor(cleanValue)) {
+        if (!Double.isFinite(value) || value <= 0 || value != Math.floor(value)) {
             throw new InvalidPaymentException(
                     "The payment amount must be a positive whole number.");
         }
-
-        value = cleanValue;
+        // el value se asigna directamente al constructor, no se necesita sanitizar
+        // value = value;
     }
 }
