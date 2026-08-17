@@ -5,6 +5,7 @@ import com.chronus.domain.repository.AppointmentRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * In-memory adapter for {@link AppointmentRepository}.
@@ -20,5 +21,13 @@ public class InMemoryAppointmentRepository implements AppointmentRepository {
     @Override
     public List<Appointment> findAll() {
         return List.copyOf(appointments);
+    }
+
+    @Override
+    public Appointment findByAppointmentId(String appointmentId) {
+        return appointments.stream()
+                .filter(appointment -> Objects.equals(appointment.getAppointmentId(), appointmentId))
+                .findFirst()
+                .orElse(null);
     }
 }

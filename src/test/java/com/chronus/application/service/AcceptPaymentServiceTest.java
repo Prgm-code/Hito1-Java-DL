@@ -15,9 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.verify;
 
-@DisplayName("Accept payment service")
+@DisplayName("Accept payment use case")
 @ExtendWith(MockitoExtension.class)
-class AcceptPaymentServiceTest {
+class AcceptPaymentUseCaseTest {
 
     @Mock
     private PaymentRepository paymentRepository;
@@ -32,7 +32,7 @@ class AcceptPaymentServiceTest {
 
     @BeforeEach
     void setUp() {
-        acceptPaymentUseCase = new AcceptPaymentService(
+        acceptPaymentUseCase = new AcceptPaymentUseCase(
                 paymentRepository, emailNotifier, whatsAppNotifier);
     }
 
@@ -42,7 +42,7 @@ class AcceptPaymentServiceTest {
         Payment payment = new Payment("1", new PaymentAmount(150));
 
         // Act
-        acceptPaymentUseCase.acceptPayment(payment);
+        acceptPaymentUseCase.execute(payment);
 
         // Assert
         verify(paymentRepository).save(payment);

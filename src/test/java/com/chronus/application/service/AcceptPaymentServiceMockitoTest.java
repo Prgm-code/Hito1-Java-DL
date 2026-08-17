@@ -6,21 +6,17 @@ import com.chronus.application.usecase.AcceptPaymentUseCase;
 import com.chronus.domain.entity.Payment;
 import com.chronus.domain.repository.PaymentRepository;
 import com.chronus.domain.valueobject.PaymentAmount;
-import com.chronus.infrastructure.persistence.InMemoryPaymentRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-@DisplayName("Accept payment service with Mockito")
+@DisplayName("Accept payment use case with Mockito")
 @ExtendWith(MockitoExtension.class)
-class AcceptPaymentServiceMockitoTest {
+class AcceptPaymentUseCaseMockitoTest {
 
     @Mock
     private EmailNotifier emailNotifier;
@@ -28,25 +24,28 @@ class AcceptPaymentServiceMockitoTest {
     @Mock
     private WhatsAppNotifier whatsAppNotifier;
 
+    @Mock
+    private PaymentRepository paymentRepository;
+
     @Test
     void shouldNotifyBothChannelsForValidPayment() {
         // Arrange
-        PaymentRepository paymentRepository = new InMemoryPaymentRepository();
-        AcceptPaymentUseCase acceptPaymentUseCase = new AcceptPaymentService(
+        AcceptPaymentUseCase acceptPaymentUseCase = new AcceptPaymentUseCase(
                 paymentRepository,
                 emailNotifier,
                 whatsAppNotifier);
+        Payment payment = new Payment("1", new PaymentAmount(150));
 
         // Act
-        acceptPaymentUseCase.acceptPayment(new Payment("1", new PaymentAmount(150)));
+        acceptPaymentUseCase.execute(payment);
 
         // Assert
-        assertEquals(1, paymentRepository.findAll().size());
+        verify(paymentRepository).save(payment);
         verify(emailNotifier).sendEmail(
-                eq("patient@chronus.com"),
-                contains("Pago de 150"));
+                "patient@chronus.com",
+                "Pago de 150 aceptado");
         verify(whatsAppNotifier).sendWhatsApp(
-                eq("+56900000000"),
-                contains("Pago de 150"));
+                "+56900000000",
+                "Pago de 150 aceptado");
     }
 }

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("In-memory appointment repository")
@@ -30,5 +31,33 @@ class InMemoryAppointmentRepositoryTest {
         // Assert
         assertEquals(List.of(appointment), appointments);
         assertThrows(UnsupportedOperationException.class, () -> appointments.add(appointment));
+    }
+
+    @Test
+    void shouldFindAppointmentById() {
+        // Arrange
+        AppointmentRepository appointmentRepository = new InMemoryAppointmentRepository();
+        Appointment appointment = new Appointment(
+                "1",
+                new AppointmentDateTime(LocalDateTime.now().plusDays(1)));
+        appointmentRepository.save(appointment);
+
+        // Act
+        Appointment foundAppointment = appointmentRepository.findByAppointmentId("1");
+
+        // Assert
+        assertEquals(appointment, foundAppointment);
+    }
+
+    @Test
+    void shouldReturnNullWhenAppointmentIdDoesNotExist() {
+        // Arrange
+        AppointmentRepository appointmentRepository = new InMemoryAppointmentRepository();
+
+        // Act
+        Appointment foundAppointment = appointmentRepository.findByAppointmentId("999");
+
+        // Assert
+        assertNull(foundAppointment);
     }
 }

@@ -2,9 +2,7 @@ package com.chronus.application.service;
 
 import com.chronus.application.usecase.CreateAppointmentUseCase;
 import com.chronus.domain.entity.Appointment;
-import com.chronus.domain.exception.OccupiedAppointmentException;
 import com.chronus.domain.repository.AppointmentRepository;
-import com.chronus.domain.service.AppointmentConflictChecker;
 import com.chronus.domain.valueobject.AppointmentDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,17 +12,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@DisplayName("Create appointment service")
+@DisplayName("Create appointment use case")
 @ExtendWith(MockitoExtension.class)
-class CreateAppointmentServiceTest {
+class CreateAppointmentUseCaseTest {
 
     @Mock
     private AppointmentRepository appointmentRepository;
@@ -33,43 +28,40 @@ class CreateAppointmentServiceTest {
 
     @BeforeEach
     void setUp() {
-        createAppointmentUseCase = new CreateAppointmentService(
-                appointmentRepository, new AppointmentConflictChecker());
+        createAppointmentUseCase = new CreateAppointmentUseCase(appointmentRepository);
     }
 
     @Test
-    void shouldStoreFutureAppointmentWhenThereIsNoCollision() {
+    void shouldStoreAppointmentWhenIdIsAvailable() {
         // Arrange
         Appointment appointment = new Appointment(
                 "1",
                 new AppointmentDateTime(LocalDateTime.now().plusMinutes(1)));
-        when(appointmentRepository.findAll()).thenReturn(List.of());
+        when(appointmentRepository.findByAppointmentId("1")).thenReturn(null);
 
         // Act
-        createAppointmentUseCase.createAppointment(appointment);
+        createAppointmentUseCase.execute(appointment);
 
         // Assert
-        verify(appointmentRepository).findAll();
+        verify(appointmentRepository).findByAppointmentId("1");
         verify(appointmentRepository).save(appointment);
     }
 
     @Test
-    void shouldRejectAppointmentWhenDateTimeIsOccupied() {
+    void shouldRejectAppointmentWhenIdAlreadyExists() {
         // Arrange
-        LocalDateTime dateTime = LocalDateTime.now().plusMinutes(1);
-        AppointmentDateTime appointmentDateTime = new AppointmentDateTime(dateTime);
-        Appointment existingAppointment = new Appointment("1", appointmentDateTime);
-        Appointment appointment = new Appointment("2", appointmentDateTime);
-        when(appointmentRepository.findAll()).thenReturn(List.of(existingAppointment));
+        Appointment appointment = new Appointment(
+                "1",
+                new AppointmentDateTime(LocalDateTime.now().plusMinutes(1)));
+        when(appointmentRepository.findByAppointmentId("1")).thenReturn(appointment);
 
         // Act
-        OccupiedAppointmentException exception = assertThrows(
-                OccupiedAppointmentException.class,
-                () -> createAppointmentUseCase.createAppointment(appointment));
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> createAppointmentUseCase.execute(appointment));
 
         // Assert
-        assertEquals("An appointment already exists at this date and time.", exception.getMessage());
-        verify(appointmentRepository).findAll();
-        verify(appointmentRepository, never()).save(appointment);
+        assertEquals("Appointment already exists", exception.getMessage());
+        verify(appointmentRepository).findByAppointmentId("1");
     }
 }

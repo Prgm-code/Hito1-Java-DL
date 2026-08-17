@@ -14,9 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.verify;
 
-@DisplayName("Create patient service")
+@DisplayName("Create patient use case")
 @ExtendWith(MockitoExtension.class)
-class CreatePatientServiceTest {
+class CreatePatientUseCaseTest {
 
     @Mock
     private PatientRepository patientRepository;
@@ -25,7 +25,7 @@ class CreatePatientServiceTest {
 
     @BeforeEach
     void setUp() {
-        createPatientUseCase = new CreatePatientService(patientRepository);
+        createPatientUseCase = new CreatePatientUseCase(patientRepository);
     }
 
     @Test
@@ -38,7 +38,7 @@ class CreatePatientServiceTest {
                 new PhoneNumber("+56912345678"));
 
         // Act
-        createPatientUseCase.createPatient(patient);
+        createPatientUseCase.execute(patient);
 
         // Assert
         verify(patientRepository).save(patient);

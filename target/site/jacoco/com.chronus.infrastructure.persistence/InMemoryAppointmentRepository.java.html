@@ -5,21 +5,30 @@ import com.chronus.domain.repository.AppointmentRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * In-memory adapter for {@link AppointmentRepository}.
  */
-<span class="fc" id="L12">public class InMemoryAppointmentRepository implements AppointmentRepository {</span>
-<span class="fc" id="L13">    private final List&lt;Appointment&gt; appointments = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L13">public class InMemoryAppointmentRepository implements AppointmentRepository {</span>
+<span class="fc" id="L14">    private final List&lt;Appointment&gt; appointments = new ArrayList&lt;&gt;();</span>
 
     @Override
     public void save(Appointment appointment) {
-<span class="fc" id="L17">        appointments.add(appointment);</span>
-<span class="fc" id="L18">    }</span>
+<span class="fc" id="L18">        appointments.add(appointment);</span>
+<span class="fc" id="L19">    }</span>
 
     @Override
     public List&lt;Appointment&gt; findAll() {
-<span class="fc" id="L22">        return List.copyOf(appointments);</span>
+<span class="fc" id="L23">        return List.copyOf(appointments);</span>
+    }
+
+    @Override
+    public Appointment findByAppointmentId(String appointmentId) {
+<span class="fc" id="L28">        return appointments.stream()</span>
+<span class="fc" id="L29">                .filter(appointment -&gt; Objects.equals(appointment.getAppointmentId(), appointmentId))</span>
+<span class="fc" id="L30">                .findFirst()</span>
+<span class="fc" id="L31">                .orElse(null);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

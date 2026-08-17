@@ -6,42 +6,46 @@ import com.chronus.application.usecase.AcceptPaymentUseCase;
 import com.chronus.domain.entity.Payment;
 import com.chronus.domain.repository.PaymentRepository;
 import com.chronus.domain.valueobject.PaymentAmount;
-import com.chronus.infrastructure.persistence.InMemoryPaymentRepository;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 
-@DisplayName("Accept payment service with dummies")
-class AcceptPaymentServiceDummyTest {
+@DisplayName("Accept payment use case with Mockito")
+@ExtendWith(MockitoExtension.class)
+class AcceptPaymentUseCaseMockitoInteractionTest {
 
-    private static class DummyEmailNotifier implements EmailNotifier {
-        @Override
-        public void sendEmail(String email, String message) {
-        }
-    }
+    @Mock
+    private PaymentRepository paymentRepository;
 
-    private static class DummyWhatsAppNotifier implements WhatsAppNotifier {
-        @Override
-        public void sendWhatsApp(String phone, String message) {
-        }
-    }
+    @Mock
+    private EmailNotifier emailNotifier;
+
+    @Mock
+    private WhatsAppNotifier whatsAppNotifier;
 
     @Test
-    void shouldStoreValidPaymentUsingDummyNotifiers() {
+    void shouldStoreAndNotifyUsingMockitoMocks() {
         // Arrange
-        PaymentRepository paymentRepository = new InMemoryPaymentRepository();
-        AcceptPaymentUseCase acceptPaymentUseCase = new AcceptPaymentService(
+        AcceptPaymentUseCase acceptPaymentUseCase = new AcceptPaymentUseCase(
                 paymentRepository,
-                new DummyEmailNotifier(),
-                new DummyWhatsAppNotifier());
+                emailNotifier,
+                whatsAppNotifier);
         Payment payment = new Payment("1", new PaymentAmount(100));
 
         // Act
-        acceptPaymentUseCase.acceptPayment(payment);
+        acceptPaymentUseCase.execute(payment);
 
         // Assert
-        assertEquals(1, paymentRepository.findAll().size());
-        assertEquals(payment, paymentRepository.findAll().get(0));
+        verify(paymentRepository).save(payment);
+        verify(emailNotifier).sendEmail(
+                "patient@chronus.com",
+                "Pago de 100 aceptado");
+        verify(whatsAppNotifier).sendWhatsApp(
+                "+56900000000",
+                "Pago de 100 aceptado");
     }
 }
