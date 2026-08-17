@@ -2,8 +2,6 @@ package com.chronus.infrastructure.persistence;
 
 import com.chronus.domain.entity.Patient;
 import com.chronus.domain.repository.PatientRepository;
-import com.chronus.domain.valueobject.Email;
-import com.chronus.domain.valueobject.PhoneNumber;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -23,8 +21,8 @@ class InMemoryPatientRepositoryTest {
         Patient patient = new Patient(
                 "123",
                 "Juanito Pérez",
-                new Email("juanito.perez@example.com"),
-                new PhoneNumber("+56912345678"));
+                "juanito.perez@example.com",
+                "+56912345678");
 
         // Act
         patientRepository.save(patient);
@@ -42,8 +40,8 @@ class InMemoryPatientRepositoryTest {
         Patient patient = new Patient(
                 "123",
                 "Juanito Pérez",
-                new Email("juanito.perez@example.com"),
-                new PhoneNumber("+56912345678"));
+                "juanito.perez@example.com",
+                "+56912345678");
         patientRepository.save(patient);
 
         // Act

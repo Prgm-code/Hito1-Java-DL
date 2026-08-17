@@ -17,15 +17,14 @@ class AppointmentTest {
     void shouldKeepRequiredAppointmentIdentityAndDateTime() {
         // Arrange
         String appointmentId = "1";
-        AppointmentDateTime dateTime =
-                new AppointmentDateTime(LocalDateTime.now().plusDays(1).withNano(0));
+        LocalDateTime dateTime = LocalDateTime.now().plusDays(1).withNano(0);
 
         // Act
         Appointment appointment = new Appointment(appointmentId, dateTime);
 
         // Assert
         assertEquals(appointmentId, appointment.getAppointmentId());
-        assertEquals(dateTime, appointment.getDateTime());
+        assertEquals(new AppointmentDateTime(dateTime), appointment.getDateTime());
     }
 
     @Test
@@ -33,23 +32,22 @@ class AppointmentTest {
         // Arrange
         Appointment appointment = new Appointment(
                 "1",
-                new AppointmentDateTime(LocalDateTime.now().plusDays(1).withNano(0)));
-        AppointmentDateTime updatedDateTime =
-                new AppointmentDateTime(LocalDateTime.now().plusDays(2).withNano(0));
+                LocalDateTime.now().plusDays(1).withNano(0));
+        LocalDateTime updatedDateTime =
+                LocalDateTime.now().plusDays(2).withNano(0);
 
         // Act
         appointment.updateDateTime(updatedDateTime);
 
         // Assert
         assertEquals("1", appointment.getAppointmentId());
-        assertEquals(updatedDateTime, appointment.getDateTime());
+        assertEquals(new AppointmentDateTime(updatedDateTime), appointment.getDateTime());
     }
 
     @Test
     void shouldRejectAppointmentWithoutId() {
         // Arrange
-        AppointmentDateTime dateTime =
-                new AppointmentDateTime(LocalDateTime.now().plusDays(1).withNano(0));
+        LocalDateTime dateTime = LocalDateTime.now().plusDays(1).withNano(0);
 
         // Act
         InvalidDateAppointmentException exception = assertThrows(
@@ -58,5 +56,16 @@ class AppointmentTest {
 
         // Assert
         assertEquals("The appointment id is required.", exception.getMessage());
+    }
+
+    @Test
+    void shouldRejectAppointmentWithoutDateTime() {
+        // Act
+        InvalidDateAppointmentException exception = assertThrows(
+                InvalidDateAppointmentException.class,
+                () -> new Appointment("1", null));
+
+        // Assert
+        assertEquals("The appointment date and time is required.", exception.getMessage());
     }
 }

@@ -14,18 +14,18 @@ public class Patient {
 
     // constructor para crear un paciente con los detalles de contacto requeridos
     // para las notificaciones
-<span class="fc" id="L17">    public Patient(String patientId, String fullName, Email email, PhoneNumber phoneNumber) {</span>
+<span class="fc" id="L17">    public Patient(String patientId, String fullName, String email, String phoneNumber) {</span>
 <span class="fc" id="L18">        this.patientId = new PatientId(patientId);</span>
 <span class="fc" id="L19">        this.fullName = new FullName(fullName);</span>
-<span class="fc" id="L20">        this.email = email;</span>
-<span class="fc" id="L21">        this.phoneNumber = phoneNumber;</span>
+<span class="fc" id="L20">        this.email = new Email(email);</span>
+<span class="fc" id="L21">        this.phoneNumber = new PhoneNumber(phoneNumber);</span>
 <span class="fc" id="L22">    }</span>
 
     // metodo con semantica de negocio par aactualizar la informacion del paciente
-    public void updateInformation(String fullName, Email email, PhoneNumber phoneNumber) {
+    public void updateInformation(String fullName, String email, String phoneNumber) {
 <span class="fc" id="L26">        this.fullName = new FullName(fullName);</span>
-<span class="fc" id="L27">        this.email = email;</span>
-<span class="fc" id="L28">        this.phoneNumber = phoneNumber;</span>
+<span class="fc" id="L27">        this.email = new Email(email);</span>
+<span class="fc" id="L28">        this.phoneNumber = new PhoneNumber(phoneNumber);</span>
 <span class="fc" id="L29">    }</span>
 
     // getters para obtener los detalles del paciente

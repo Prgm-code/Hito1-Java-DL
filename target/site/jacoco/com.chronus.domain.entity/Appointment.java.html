@@ -3,29 +3,31 @@
 import com.chronus.domain.valueobject.AppointmentDateTime;
 import com.chronus.domain.valueobject.AppointmentId;
 
+import java.time.LocalDateTime;
+
 // entidad de dominio que representa una cita de atención médica
 public class Appointment {
     private final AppointmentId appointmentId;
     private AppointmentDateTime dateTime;
 
     // constructor para crear una cita con la fecha y hora requeridas
-<span class="fc" id="L12">    public Appointment(String appointmentId, AppointmentDateTime dateTime) {</span>
-<span class="fc" id="L13">        this.appointmentId = new AppointmentId(appointmentId);</span>
-<span class="fc" id="L14">        this.dateTime = dateTime;</span>
-<span class="fc" id="L15">    }</span>
+<span class="fc" id="L14">    public Appointment(String appointmentId, LocalDateTime dateTime) {</span>
+<span class="fc" id="L15">        this.appointmentId = new AppointmentId(appointmentId);</span>
+<span class="fc" id="L16">        this.dateTime = new AppointmentDateTime(dateTime);</span>
+<span class="fc" id="L17">    }</span>
 
     // metodo con semantica de negocio para actualizar la fecha y hora de la cita
-    public void updateDateTime(AppointmentDateTime dateTime) {
-<span class="fc" id="L19">        this.dateTime = dateTime;</span>
-<span class="fc" id="L20">    }</span>
+    public void updateDateTime(LocalDateTime dateTime) {
+<span class="fc" id="L21">        this.dateTime = new AppointmentDateTime(dateTime);</span>
+<span class="fc" id="L22">    }</span>
 
     // getters para obtener los detalles de la cita
     public String getAppointmentId() {
-<span class="fc" id="L24">        return appointmentId.value();</span>
+<span class="fc" id="L26">        return appointmentId.value();</span>
     }
 
     public AppointmentDateTime getDateTime() {
-<span class="fc" id="L28">        return dateTime;</span>
+<span class="fc" id="L30">        return dateTime;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

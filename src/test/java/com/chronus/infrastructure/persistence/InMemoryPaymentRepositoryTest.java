@@ -2,7 +2,6 @@ package com.chronus.infrastructure.persistence;
 
 import com.chronus.domain.entity.Payment;
 import com.chronus.domain.repository.PaymentRepository;
-import com.chronus.domain.valueobject.PaymentAmount;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +17,7 @@ class InMemoryPaymentRepositoryTest {
     void shouldStorePaymentAndReturnImmutableCopy() {
         // Arrange
         PaymentRepository paymentRepository = new InMemoryPaymentRepository();
-        Payment payment = new Payment("1", new PaymentAmount(150));
+        Payment payment = new Payment("1", 150);
 
         // Act
         paymentRepository.save(payment);

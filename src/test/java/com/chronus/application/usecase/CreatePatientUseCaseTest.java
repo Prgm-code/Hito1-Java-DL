@@ -1,10 +1,7 @@
-package com.chronus.application.service;
+package com.chronus.application.usecase;
 
-import com.chronus.application.usecase.CreatePatientUseCase;
 import com.chronus.domain.entity.Patient;
 import com.chronus.domain.repository.PatientRepository;
-import com.chronus.domain.valueobject.Email;
-import com.chronus.domain.valueobject.PhoneNumber;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,8 +31,8 @@ class CreatePatientUseCaseTest {
         Patient patient = new Patient(
                 "123",
                 "Juanito Pérez",
-                new Email("juanito.perez@example.com"),
-                new PhoneNumber("+56912345678"));
+                "juanito.perez@example.com",
+                "+56912345678");
 
         // Act
         createPatientUseCase.execute(patient);

@@ -1,15 +1,11 @@
-package com.chronus.application.service;
+package com.chronus.application.usecase;
 
 import com.chronus.application.port.EmailNotifier;
 import com.chronus.application.port.WhatsAppNotifier;
-import com.chronus.application.usecase.SendAppointmentReminderUseCase;
 import com.chronus.domain.entity.Appointment;
 import com.chronus.domain.entity.Patient;
 import com.chronus.domain.exception.InvalidPatientDataException;
 import com.chronus.domain.repository.PatientRepository;
-import com.chronus.domain.valueobject.AppointmentDateTime;
-import com.chronus.domain.valueobject.Email;
-import com.chronus.domain.valueobject.PhoneNumber;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,10 +49,10 @@ class SendAppointmentReminderUseCaseTest {
         Patient patient = new Patient(
                 "123",
                 "Juanito Pérez",
-                new Email("juanito.perez@example.com"),
-                new PhoneNumber("+56912345678"));
+                "juanito.perez@example.com",
+                "+56912345678");
         LocalDateTime dateTime = LocalDateTime.now().plusDays(1).withNano(0);
-        Appointment appointment = new Appointment("1", new AppointmentDateTime(dateTime));
+        Appointment appointment = new Appointment("1", dateTime);
         String message = "Recordatorio: su cita está programada para " + dateTime + ".";
         when(patientRepository.findById("123")).thenReturn(patient);
 
@@ -74,7 +70,7 @@ class SendAppointmentReminderUseCaseTest {
         // Arrange
         Appointment appointment = new Appointment(
                 "1",
-                new AppointmentDateTime(LocalDateTime.now().plusDays(1)));
+                LocalDateTime.now().plusDays(1));
         when(patientRepository.findById("999")).thenReturn(null);
 
         // Act

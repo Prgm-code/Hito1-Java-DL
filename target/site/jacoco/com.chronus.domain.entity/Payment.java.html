@@ -9,14 +9,14 @@ public class Payment {
     private PaymentAmount amount;
 
     // constructor para crear un pago con el monto requerido
-<span class="fc" id="L12">    public Payment(String paymentId, PaymentAmount amount) {</span>
+<span class="fc" id="L12">    public Payment(String paymentId, double amount) {</span>
 <span class="fc" id="L13">        this.paymentId = new PaymentId(paymentId);</span>
-<span class="fc" id="L14">        this.amount = amount;</span>
+<span class="fc" id="L14">        this.amount = new PaymentAmount(amount);</span>
 <span class="fc" id="L15">    }</span>
 
     // metodo con semantica de negocio para actualizar el monto del pago
-    public void updateAmount(PaymentAmount amount) {
-<span class="fc" id="L19">        this.amount = amount;</span>
+    public void updateAmount(double amount) {
+<span class="fc" id="L19">        this.amount = new PaymentAmount(amount);</span>
 <span class="fc" id="L20">    }</span>
 
     // getters para obtener los detalles del pago

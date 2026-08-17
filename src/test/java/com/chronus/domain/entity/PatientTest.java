@@ -1,6 +1,8 @@
 package com.chronus.domain.entity;
 
 import com.chronus.domain.exception.InvalidPatientDataException;
+import com.chronus.domain.exception.InvalidEmailException;
+import com.chronus.domain.exception.InvalidPhoneNumberException;
 import com.chronus.domain.valueobject.Email;
 import com.chronus.domain.valueobject.PhoneNumber;
 import org.junit.jupiter.api.DisplayName;
@@ -17,8 +19,8 @@ class PatientTest {
         // Arrange
         String patientId = "123";
         String fullName = "Juanito Pérez";
-        Email email = new Email("juanito.perez@example.com");
-        PhoneNumber phoneNumber = new PhoneNumber("+56912345678");
+        String email = "juanito.perez@example.com";
+        String phoneNumber = "+56912345678";
 
         // Act
         Patient patient = new Patient(patientId, fullName, email, phoneNumber);
@@ -26,8 +28,8 @@ class PatientTest {
         // Assert
         assertEquals(patientId, patient.getPatientId());
         assertEquals(fullName, patient.getFullName());
-        assertEquals(email, patient.getEmail());
-        assertEquals(phoneNumber, patient.getPhoneNumber());
+        assertEquals(new Email(email), patient.getEmail());
+        assertEquals(new PhoneNumber(phoneNumber), patient.getPhoneNumber());
     }
 
     @Test
@@ -36,10 +38,10 @@ class PatientTest {
         Patient patient = new Patient(
                 "123",
                 "Juanito Pérez",
-                new Email("juanito.perez@example.com"),
-                new PhoneNumber("+56912345678"));
-        Email updatedEmail = new Email("juan.perez@chronus.com");
-        PhoneNumber updatedPhoneNumber = new PhoneNumber("+56987654321");
+                "juanito.perez@example.com",
+                "+56912345678");
+        String updatedEmail = "juan.perez@chronus.com";
+        String updatedPhoneNumber = "+56987654321";
 
         // Act
         patient.updateInformation("Juan Pérez", updatedEmail, updatedPhoneNumber);
@@ -47,8 +49,8 @@ class PatientTest {
         // Assert
         assertEquals("123", patient.getPatientId());
         assertEquals("Juan Pérez", patient.getFullName());
-        assertEquals(updatedEmail, patient.getEmail());
-        assertEquals(updatedPhoneNumber, patient.getPhoneNumber());
+        assertEquals(new Email(updatedEmail), patient.getEmail());
+        assertEquals(new PhoneNumber(updatedPhoneNumber), patient.getPhoneNumber());
     }
 
     @Test
@@ -62,8 +64,8 @@ class PatientTest {
                 () -> new Patient(
                         patientId,
                         "Juanito Pérez",
-                        new Email("juanito.perez@example.com"),
-                        new PhoneNumber("+56912345678")));
+                        "juanito.perez@example.com",
+                        "+56912345678"));
 
         // Assert
         assertEquals("The patient id is required.", exception.getMessage());
@@ -80,8 +82,8 @@ class PatientTest {
                 () -> new Patient(
                         patientId,
                         "Juanito Pérez",
-                        new Email("juanito.perez@example.com"),
-                        new PhoneNumber("+56912345678")));
+                        "juanito.perez@example.com",
+                        "+56912345678"));
 
         // Assert
         assertEquals("The patient id is required.", exception.getMessage());
@@ -98,8 +100,8 @@ class PatientTest {
                 () -> new Patient(
                         "123",
                         fullName,
-                        new Email("juanito.perez@example.com"),
-                        new PhoneNumber("+56912345678")));
+                        "juanito.perez@example.com",
+                        "+56912345678"));
 
         // Assert
         assertEquals("The patient full name is required.", exception.getMessage());
@@ -116,10 +118,32 @@ class PatientTest {
                 () -> new Patient(
                         "123",
                         fullName,
-                        new Email("juanito.perez@example.com"),
-                        new PhoneNumber("+56912345678")));
+                        "juanito.perez@example.com",
+                        "+56912345678"));
 
         // Assert
         assertEquals("The patient full name is required.", exception.getMessage());
+    }
+
+    @Test
+    void shouldRejectPatientWithoutEmail() {
+        // Act
+        InvalidEmailException exception = assertThrows(
+                InvalidEmailException.class,
+                () -> new Patient("123", "Juanito Pérez", null, "+56912345678"));
+
+        // Assert
+        assertEquals("Email is required", exception.getMessage());
+    }
+
+    @Test
+    void shouldRejectPatientWithoutPhoneNumber() {
+        // Act
+        InvalidPhoneNumberException exception = assertThrows(
+                InvalidPhoneNumberException.class,
+                () -> new Patient("123", "Juanito Pérez", "juanito.perez@example.com", null));
+
+        // Assert
+        assertEquals("Phone number is required", exception.getMessage());
     }
 }

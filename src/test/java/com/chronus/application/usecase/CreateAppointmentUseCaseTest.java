@@ -1,9 +1,7 @@
-package com.chronus.application.service;
+package com.chronus.application.usecase;
 
-import com.chronus.application.usecase.CreateAppointmentUseCase;
 import com.chronus.domain.entity.Appointment;
 import com.chronus.domain.repository.AppointmentRepository;
-import com.chronus.domain.valueobject.AppointmentDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
@@ -36,7 +35,7 @@ class CreateAppointmentUseCaseTest {
         // Arrange
         Appointment appointment = new Appointment(
                 "1",
-                new AppointmentDateTime(LocalDateTime.now().plusMinutes(1)));
+                LocalDateTime.now().plusMinutes(1));
         when(appointmentRepository.findByAppointmentId("1")).thenReturn(null);
 
         // Act
@@ -52,7 +51,7 @@ class CreateAppointmentUseCaseTest {
         // Arrange
         Appointment appointment = new Appointment(
                 "1",
-                new AppointmentDateTime(LocalDateTime.now().plusMinutes(1)));
+                LocalDateTime.now().plusMinutes(1));
         when(appointmentRepository.findByAppointmentId("1")).thenReturn(appointment);
 
         // Act

@@ -10,7 +10,7 @@ El proyecto implementa el backend Java puro de una aplicación de agendamiento p
 
 En un centro de salud, coordinar horarios, mantener los datos de contacto de los pacientes y confirmar pagos requiere reglas claras para evitar errores de agenda y comunicaciones incompletas.
 
-**Chronus** centraliza esas reglas en clases Java puras. El sistema valida que las citas sean futuras y no colisionen, exige información de contacto para cada paciente, acepta únicamente pagos enteros positivos y prepara recordatorios por email y WhatsApp.
+**Chronus** centraliza esas reglas en clases Java puras. El sistema valida que las citas sean futuras y que sus identificadores no se repitan, modela los datos de contacto con value objects, acepta únicamente pagos enteros positivos y prepara recordatorios por email y WhatsApp.
 
 ---
 
@@ -41,7 +41,7 @@ El dominio utiliza entidades con identidad explícita y ciclo de actualización,
 - `PaymentId`
 - `PaymentAmount`
 
-Cada value object valida sus reglas en el constructor compacto. Las entidades crean los value objects al instanciarse y exponen su estado mediante getters.
+Cada value object valida sus reglas en el constructor compacto. Las entidades mantienen sus datos tipados con value objects, crean sus identificadores y nombres mediante esos objetos al instanciarse, y exponen su estado mediante getters descriptivos.
 
 ### 3. Desacoplamiento por contratos de repositorios
 
@@ -55,7 +55,7 @@ El núcleo de la aplicación se orquesta desde `CreatePatientUseCase`, `CreateAp
 
 1. **Fecha de cita válida:** una cita debe estar estrictamente en el futuro. Una fecha pasada o igual al momento actual genera `InvalidDateAppointmentException`.
 2. **Identidad de cita:** no se pueden registrar dos citas con el mismo identificador. La segunda solicitud genera `RuntimeException`.
-3. **Datos del paciente:** el nombre completo y el teléfono son obligatorios para crear un `Patient`. La ausencia de alguno genera `InvalidPatientDataException`. El email es obligatorio y debe tener un formato válido; si falta o es inválido genera `InvalidEmailException`.
+3. **Datos del paciente:** el nombre, el email y el teléfono se modelan con value objects auto-validados (`FullName`, `Email` y `PhoneNumber`), que rechazan valores nulos, vacíos o con formato inválido.
 4. **Pago válido:** el monto debe ser un número entero estrictamente positivo. Montos negativos, cero o fraccionarios generan `InvalidPaymentException`.
 5. **Recordatorios:** una cita puede enviar un recordatorio al email y WhatsApp registrados para el paciente.
 
