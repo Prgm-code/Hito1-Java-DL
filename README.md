@@ -73,27 +73,6 @@ El núcleo de la aplicación se orquesta desde `CreateAppointmentService`, `Acce
 
 ---
 
-## Verificación contra la rúbrica
-
-La verificación se realizó con el código actual y la rúbrica del Hito 3:
-
-- **Arquitectura de capas:** cumplida. `ArchitectureTest` contiene cinco reglas ArchUnit y comprueba que las dependencias respeten las fronteras entre dominio, aplicación e infraestructura.
-- **Patrones tácticos:** cumplido. `Patient`, `Appointment` y `Payment` tienen identidad explícita. Los ocho value objects del dominio son `record`, inmutables y auto-validados.
-- **Contratos de repositorio:** cumplido. Los repositorios son interfaces del dominio y sus adaptadores están en infraestructura. Los servicios reciben esas abstracciones por constructor.
-
-Las pruebas automatizadas siguen el patrón **Arrange – Act – Assert (AAA)** y cubren escenarios exitosos, valores límite, excepciones de negocio, repositorios, notificadores, dummies, mocks y reglas de arquitectura.
-
-La última ejecución de `mvn verify` valida **68 pruebas**, con **0 fallos** y **0 errores**:
-
-- **100% de métodos** — 47/47.
-- **100% de ramas** — 44/44.
-- **100% de líneas** — 142/142.
-- **78,13% de clases** — 25/32. Las clases sin cobertura ejecutable son interfaces de contratos y casos de uso.
-
-`jacoco:check` confirma que las líneas y ramas cumplen el mínimo configurado del 100%.
-
----
-
 ## Requisitos
 
 - JDK 17 o superior.
