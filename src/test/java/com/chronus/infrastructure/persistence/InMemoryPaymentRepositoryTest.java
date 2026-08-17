@@ -18,7 +18,7 @@ class InMemoryPaymentRepositoryTest {
     void shouldStorePaymentAndReturnImmutableCopy() {
         // Arrange
         PaymentRepository paymentRepository = new InMemoryPaymentRepository();
-        Payment payment = new Payment(new PaymentAmount(150));
+        Payment payment = new Payment("1", new PaymentAmount(150));
 
         // Act
         paymentRepository.save(payment);

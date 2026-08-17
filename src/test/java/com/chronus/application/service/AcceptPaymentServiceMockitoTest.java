@@ -38,7 +38,7 @@ class AcceptPaymentServiceMockitoTest {
                 whatsAppNotifier);
 
         // Act
-        acceptPaymentUseCase.acceptPayment(new Payment(new PaymentAmount(150)));
+        acceptPaymentUseCase.acceptPayment(new Payment("1", new PaymentAmount(150)));
 
         // Assert
         assertEquals(1, paymentRepository.findAll().size());

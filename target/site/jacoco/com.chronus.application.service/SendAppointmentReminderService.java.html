@@ -6,27 +6,25 @@ import com.chronus.application.usecase.SendAppointmentReminderUseCase;
 import com.chronus.domain.entity.Appointment;
 import com.chronus.domain.entity.Patient;
 
-/**
- * Application service that sends appointment reminders through notification
- * ports.
- */
+// servicio de aplicacion que envia recordatorios de citas a través de los puertos de notificación
+
 public class SendAppointmentReminderService implements SendAppointmentReminderUseCase {
     private final EmailNotifier emailNotifier;
     private final WhatsAppNotifier whatsAppNotifier;
 
     public SendAppointmentReminderService(
             EmailNotifier emailNotifier,
-<span class="fc" id="L19">            WhatsAppNotifier whatsAppNotifier) {</span>
-<span class="fc" id="L20">        this.emailNotifier = emailNotifier;</span>
-<span class="fc" id="L21">        this.whatsAppNotifier = whatsAppNotifier;</span>
-<span class="fc" id="L22">    }</span>
+<span class="fc" id="L17">            WhatsAppNotifier whatsAppNotifier) {</span>
+<span class="fc" id="L18">        this.emailNotifier = emailNotifier;</span>
+<span class="fc" id="L19">        this.whatsAppNotifier = whatsAppNotifier;</span>
+<span class="fc" id="L20">    }</span>
 
     @Override
     public void sendReminder(Patient patient, Appointment appointment) {
-<span class="fc" id="L26">        String message = &quot;Recordatorio: su cita está programada para &quot;</span>
-<span class="fc" id="L27">                + appointment.getDateTime().value() + &quot;.&quot;;</span>
-<span class="fc" id="L28">        emailNotifier.sendEmail(patient.getEmail().value(), message);</span>
-<span class="fc" id="L29">        whatsAppNotifier.sendWhatsApp(patient.getPhoneNumber().value(), message);</span>
-<span class="fc" id="L30">    }</span>
+<span class="fc" id="L24">        String message = &quot;Recordatorio: su cita está programada para &quot;</span>
+<span class="fc" id="L25">                + appointment.getDateTime().value() + &quot;.&quot;;</span>
+<span class="fc" id="L26">        emailNotifier.sendEmail(patient.getEmail().value(), message);</span>
+<span class="fc" id="L27">        whatsAppNotifier.sendWhatsApp(patient.getPhoneNumber().value(), message);</span>
+<span class="fc" id="L28">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

@@ -20,6 +20,7 @@ class InMemoryAppointmentRepositoryTest {
         // Arrange
         AppointmentRepository appointmentRepository = new InMemoryAppointmentRepository();
         Appointment appointment = new Appointment(
+                "1",
                 new AppointmentDateTime(LocalDateTime.now().plusDays(1)));
 
         // Act

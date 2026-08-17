@@ -1,8 +1,8 @@
-# Chronus — Sistema de Gestión de Citas Médicas
+# Chronus — Hito 3: arquitectura limpia y dominio modelado
 
-**Chronus** es el **Hito 1** del Curso de Java de [Desafío Latam](https://desafiolatam.com/) y [Globant](https://www.globant.com/).
+**Chronus** es la entrega del **Hito 3** del Curso de Java de [Desafío Latam](https://desafiolatam.com/) y [Globant](https://www.globant.com/).
 
-El proyecto implementa el núcleo de dominio de una aplicación de agendamiento para profesionales de la salud. Gestiona citas, datos de pacientes, pagos y recordatorios, sin depender de bases de datos, frameworks web ni servicios externos reales.
+El proyecto implementa el backend Java puro de una aplicación de agendamiento para profesionales de la salud. Gestiona citas, datos de pacientes, pagos y recordatorios, sin depender de bases de datos, frameworks web ni servicios externos reales.
 
 ---
 
@@ -11,6 +11,41 @@ El proyecto implementa el núcleo de dominio de una aplicación de agendamiento 
 En un centro de salud, coordinar horarios, mantener los datos de contacto de los pacientes y confirmar pagos requiere reglas claras para evitar errores de agenda y comunicaciones incompletas.
 
 **Chronus** centraliza esas reglas en clases Java puras. El sistema valida que las citas sean futuras y no colisionen, exige información de contacto para cada paciente, acepta únicamente pagos enteros positivos y prepara recordatorios por email y WhatsApp.
+
+---
+
+## Criterios evaluables del Hito 3
+
+La entrega se revisa contra los tres criterios de la rúbrica compartida.
+
+### 1. Arquitectura de carpetas y capas limpias
+
+El código está separado en tres capas:
+
+- `domain`: entidades, value objects, excepciones, servicios de dominio y contratos de repositorio.
+- `application`: casos de uso, servicios de aplicación y puertos de entrada y salida.
+- `infrastructure`: adaptadores de persistencia y notificación.
+
+El dominio no depende de aplicación ni infraestructura. El dominio y la aplicación tampoco importan Spring, JPA, Jackson u otros frameworks externos.
+
+### 2. Implementación de patrones tácticos
+
+El dominio utiliza entidades con identidad explícita y ciclo de actualización, además de value objects inmutables implementados como `record`:
+
+- `PatientId`
+- `FullName`
+- `Email`
+- `PhoneNumber`
+- `AppointmentId`
+- `AppointmentDateTime`
+- `PaymentId`
+- `PaymentAmount`
+
+Cada value object valida sus reglas en el constructor compacto. Las entidades crean los value objects al instanciarse y exponen su estado mediante getters.
+
+### 3. Desacoplamiento por contratos de repositorios
+
+`AppointmentRepository` y `PaymentRepository` viven en `domain.repository` y funcionan como contratos de persistencia. Sus implementaciones en memoria viven en `infrastructure.persistence`. Los servicios de aplicación reciben repositorios y puertos mediante inyección por constructor.
 
 ---
 
@@ -38,26 +73,24 @@ El núcleo de la aplicación se orquesta desde `CreateAppointmentService`, `Acce
 
 ---
 
-## Estrategia de pruebas y cobertura
+## Verificación contra la rúbrica
 
-Las pruebas automatizadas siguen el patrón **Arrange – Act – Assert (AAA)** y cubren escenarios exitosos, valores límite y excepciones de negocio.
+La verificación se realizó con el código actual y la rúbrica del Hito 3:
 
-| Área | Casos cubiertos |
-| --- | --- |
-| Citas | Creación válida, fecha pasada y colisión de horario |
-| Pacientes | Datos de contacto válidos, nombre ausente, email vacío, email inválido y teléfono ausente |
-| Pagos | Pago válido, negativo, cero y fraccionario |
-| Recordatorios | Envío por email y WhatsApp con los datos de `Juanito Pérez` |
-| Colaboradores | Repositorios, notificador por email, notificador por WhatsApp, dummies y mocks |
+- **Arquitectura de capas:** cumplida. `ArchitectureTest` contiene cinco reglas ArchUnit y comprueba que las dependencias respeten las fronteras entre dominio, aplicación e infraestructura.
+- **Patrones tácticos:** cumplido. `Patient`, `Appointment` y `Payment` tienen identidad explícita. Los ocho value objects del dominio son `record`, inmutables y auto-validados.
+- **Contratos de repositorio:** cumplido. Los repositorios son interfaces del dominio y sus adaptadores están en infraestructura. Los servicios reciben esas abstracciones por constructor.
 
-La última ejecución de la suite valida **31 pruebas** (incluye 5 reglas ArchUnit) y el reporte JaCoCo de `com.chronus` marca:
+Las pruebas automatizadas siguen el patrón **Arrange – Act – Assert (AAA)** y cubren escenarios exitosos, valores límite, excepciones de negocio, repositorios, notificadores, dummies, mocks y reglas de arquitectura.
 
-- **100% Class Coverage** — 15/15 clases.
-- **100% Method Coverage** — 32/32 métodos.
-- **100% Branch Coverage** — 12/12 ramas.
-- **100% Line Coverage** — 79/79 líneas.
+La última ejecución de `mvn verify` valida **68 pruebas**, con **0 fallos** y **0 errores**:
 
-Además, `jacoco:check` hace fallar el build si la cobertura de líneas o ramas baja de 100%.
+- **100% de métodos** — 47/47.
+- **100% de ramas** — 44/44.
+- **100% de líneas** — 142/142.
+- **78,13% de clases** — 25/32. Las clases sin cobertura ejecutable son interfaces de contratos y casos de uso.
+
+`jacoco:check` confirma que las líneas y ramas cumplen el mínimo configurado del 100%.
 
 ---
 
@@ -112,12 +145,6 @@ También se puede regenerar localmente con `mvn clean verify`; el archivo se enc
 target/site/jacoco/index.html
 ```
 
-[![Reporte JaCoCo con 100% de cobertura](image.png)](https://prgm-code.github.io/Hito1-Java-DL/)
-
-El mismo resumen se imprime automáticamente en la terminal mediante `jacoco-console-reporter`.
-
-[![Resumen de cobertura en consola](jacoco-console.png)](https://prgm-code.github.io/Hito1-Java-DL/)
-
 ---
 
 ## Estructura del proyecto
@@ -135,7 +162,9 @@ chronus/
 │   │   ├── exception/
 │   │   ├── repository/    interfaces AppointmentRepository, PaymentRepository
 │   │   ├── service/       AppointmentConflictChecker
-│   │   └── valueobject/
+│   │   └── valueobject/   PatientId, FullName, Email, PhoneNumber,
+│   │                      AppointmentId, AppointmentDateTime,
+│   │                      PaymentId, PaymentAmount
 │   └── infrastructure/
 │       ├── notification/  NoOpEmailNotifier, NoOpWhatsAppNotifier
 │       └── persistence/   InMemoryAppointmentRepository, InMemoryPaymentRepository

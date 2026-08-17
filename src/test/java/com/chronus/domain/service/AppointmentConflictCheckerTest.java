@@ -22,11 +22,11 @@ class AppointmentConflictCheckerTest {
         // Arrange
         AppointmentDateTime dateTime =
                 new AppointmentDateTime(LocalDateTime.now().plusDays(1));
-        Appointment candidate = new Appointment(dateTime);
+        Appointment candidate = new Appointment("1", dateTime);
 
         // Act
         boolean occupied = appointmentConflictChecker.isOccupied(
-                candidate, List.of(new Appointment(dateTime)));
+                candidate, List.of(new Appointment("2", dateTime)));
 
         // Assert
         assertTrue(occupied);
@@ -37,11 +37,12 @@ class AppointmentConflictCheckerTest {
         // Arrange
         LocalDateTime dateTime = LocalDateTime.now().plusDays(1);
         Appointment candidate = new Appointment(
+                "1",
                 new AppointmentDateTime(dateTime.plusMinutes(30)));
 
         // Act
         boolean occupied = appointmentConflictChecker.isOccupied(
-                candidate, List.of(new Appointment(new AppointmentDateTime(dateTime))));
+                candidate, List.of(new Appointment("2", new AppointmentDateTime(dateTime))));
 
         // Assert
         assertFalse(occupied);

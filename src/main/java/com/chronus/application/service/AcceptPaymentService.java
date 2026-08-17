@@ -6,11 +6,6 @@ import com.chronus.application.usecase.AcceptPaymentUseCase;
 import com.chronus.domain.entity.Payment;
 import com.chronus.domain.repository.PaymentRepository;
 
-/**
- * Application service that validates payments, persists them through
- * {@link PaymentRepository}, and notifies through outbound ports.
- */
-
 // servicio de aplicacion que valida los pagos, los persiste en el repositorio y
 // notifica a través de los puertos de salida
 public class AcceptPaymentService implements AcceptPaymentUseCase {

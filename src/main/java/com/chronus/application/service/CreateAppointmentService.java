@@ -6,10 +6,7 @@ import com.chronus.domain.exception.OccupiedAppointmentException;
 import com.chronus.domain.repository.AppointmentRepository;
 import com.chronus.domain.service.AppointmentConflictChecker;
 
-/**
- * Application service that checks availability and persists appointments
- * through {@link AppointmentRepository}.
- */
+// servicio de aplicacion que valida las reglas de programacion de citas y persiste las citas en el repositorio
 public class CreateAppointmentService implements CreateAppointmentUseCase {
     private final AppointmentRepository appointmentRepository;
     private final AppointmentConflictChecker appointmentConflictChecker;

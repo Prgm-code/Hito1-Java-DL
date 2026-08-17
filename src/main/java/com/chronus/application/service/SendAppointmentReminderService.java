@@ -6,10 +6,8 @@ import com.chronus.application.usecase.SendAppointmentReminderUseCase;
 import com.chronus.domain.entity.Appointment;
 import com.chronus.domain.entity.Patient;
 
-/**
- * Application service that sends appointment reminders through notification
- * ports.
- */
+// servicio de aplicacion que envia recordatorios de citas a través de los puertos de notificación
+
 public class SendAppointmentReminderService implements SendAppointmentReminderUseCase {
     private final EmailNotifier emailNotifier;
     private final WhatsAppNotifier whatsAppNotifier;

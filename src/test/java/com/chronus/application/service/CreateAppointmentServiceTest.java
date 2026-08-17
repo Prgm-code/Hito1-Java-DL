@@ -41,6 +41,7 @@ class CreateAppointmentServiceTest {
     void shouldStoreFutureAppointmentWhenThereIsNoCollision() {
         // Arrange
         Appointment appointment = new Appointment(
+                "1",
                 new AppointmentDateTime(LocalDateTime.now().plusMinutes(1)));
         when(appointmentRepository.findAll()).thenReturn(List.of());
 
@@ -57,8 +58,8 @@ class CreateAppointmentServiceTest {
         // Arrange
         LocalDateTime dateTime = LocalDateTime.now().plusMinutes(1);
         AppointmentDateTime appointmentDateTime = new AppointmentDateTime(dateTime);
-        Appointment existingAppointment = new Appointment(appointmentDateTime);
-        Appointment appointment = new Appointment(appointmentDateTime);
+        Appointment existingAppointment = new Appointment("1", appointmentDateTime);
+        Appointment appointment = new Appointment("2", appointmentDateTime);
         when(appointmentRepository.findAll()).thenReturn(List.of(existingAppointment));
 
         // Act

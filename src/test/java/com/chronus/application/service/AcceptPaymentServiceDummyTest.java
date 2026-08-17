@@ -35,7 +35,7 @@ class AcceptPaymentServiceDummyTest {
                 paymentRepository,
                 new DummyEmailNotifier(),
                 new DummyWhatsAppNotifier());
-        Payment payment = new Payment(new PaymentAmount(100));
+        Payment payment = new Payment("1", new PaymentAmount(100));
 
         // Act
         acceptPaymentUseCase.acceptPayment(payment);

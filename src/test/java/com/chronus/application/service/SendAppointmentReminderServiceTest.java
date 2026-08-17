@@ -46,7 +46,7 @@ class SendAppointmentReminderServiceTest {
                 new Email("juanito.perez@example.com"),
                 new PhoneNumber("+56912345678"));
         LocalDateTime dateTime = LocalDateTime.now().plusDays(1).withNano(0);
-        Appointment appointment = new Appointment(new AppointmentDateTime(dateTime));
+        Appointment appointment = new Appointment("1", new AppointmentDateTime(dateTime));
         String message = "Recordatorio: su cita está programada para " + dateTime + ".";
 
         // Act

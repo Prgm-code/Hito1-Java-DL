@@ -39,7 +39,7 @@ class AcceptPaymentServiceTest {
     @Test
     void shouldStoreAndNotifyForPositiveWholePayment() {
         // Arrange
-        Payment payment = new Payment(new PaymentAmount(150));
+        Payment payment = new Payment("1", new PaymentAmount(150));
 
         // Act
         acceptPaymentUseCase.acceptPayment(payment);

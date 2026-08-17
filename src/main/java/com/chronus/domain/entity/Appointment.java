@@ -1,13 +1,16 @@
 package com.chronus.domain.entity;
 
 import com.chronus.domain.valueobject.AppointmentDateTime;
+import com.chronus.domain.valueobject.AppointmentId;
 
 // entidad de dominio que representa una cita de atención médica
 public class Appointment {
+    private final AppointmentId appointmentId;
     private AppointmentDateTime dateTime;
 
     // constructor para crear una cita con la fecha y hora requeridas
-    public Appointment(AppointmentDateTime dateTime) {
+    public Appointment(String appointmentId, AppointmentDateTime dateTime) {
+        this.appointmentId = new AppointmentId(appointmentId);
         this.dateTime = dateTime;
     }
 
@@ -17,6 +20,10 @@ public class Appointment {
     }
 
     // getters para obtener los detalles de la cita
+    public String getAppointmentId() {
+        return appointmentId.value();
+    }
+
     public AppointmentDateTime getDateTime() {
         return dateTime;
     }
