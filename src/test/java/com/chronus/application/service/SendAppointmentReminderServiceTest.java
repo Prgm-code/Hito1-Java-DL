@@ -5,6 +5,9 @@ import com.chronus.application.port.WhatsAppNotifier;
 import com.chronus.application.usecase.SendAppointmentReminderUseCase;
 import com.chronus.domain.entity.Appointment;
 import com.chronus.domain.entity.Patient;
+import com.chronus.domain.valueobject.AppointmentDateTime;
+import com.chronus.domain.valueobject.Email;
+import com.chronus.domain.valueobject.PhoneNumber;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,11 +41,13 @@ class SendAppointmentReminderServiceTest {
     void shouldSendReminderUsingPatientContactData() {
         // Arrange
         Patient patient = new Patient(
+                "123",
                 "Juanito Pérez",
-                "juanito.perez@example.com",
-                "+56912345678");
-        Appointment appointment = new Appointment(LocalDateTime.of(2026, 8, 1, 10, 30));
-        String message = "Recordatorio: su cita está programada para 2026-08-01T10:30.";
+                new Email("juanito.perez@example.com"),
+                new PhoneNumber("+56912345678"));
+        LocalDateTime dateTime = LocalDateTime.now().plusDays(1).withNano(0);
+        Appointment appointment = new Appointment(new AppointmentDateTime(dateTime));
+        String message = "Recordatorio: su cita está programada para " + dateTime + ".";
 
         // Act
         sendAppointmentReminderUseCase.sendReminder(patient, appointment);

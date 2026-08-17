@@ -20,7 +20,7 @@ El núcleo de la aplicación se orquesta desde `CreateAppointmentService`, `Acce
 
 1. **Fecha de cita válida:** una cita debe estar estrictamente en el futuro. Una fecha pasada o igual al momento actual genera `InvalidDateAppointmentException`.
 2. **Sin colisiones:** no se pueden registrar dos citas en la misma fecha y hora. La segunda solicitud genera `OccupiedAppointmentException`.
-3. **Datos del paciente:** el nombre completo, email y teléfono son obligatorios para crear un `Patient`. La ausencia de alguno genera `InvalidPatientDataException`.
+3. **Datos del paciente:** el nombre completo y el teléfono son obligatorios para crear un `Patient`. La ausencia de alguno genera `InvalidPatientDataException`. El email es obligatorio y debe tener un formato válido; si falta o es inválido genera `InvalidEmailException`.
 4. **Pago válido:** el monto debe ser un número entero estrictamente positivo. Montos negativos, cero o fraccionarios generan `InvalidPaymentException`.
 5. **Recordatorios:** una cita puede enviar un recordatorio al email y WhatsApp registrados para el paciente.
 
@@ -45,7 +45,7 @@ Las pruebas automatizadas siguen el patrón **Arrange – Act – Assert (AAA)**
 | Área | Casos cubiertos |
 | --- | --- |
 | Citas | Creación válida, fecha pasada y colisión de horario |
-| Pacientes | Datos de contacto válidos, nombre ausente, email vacío y teléfono ausente |
+| Pacientes | Datos de contacto válidos, nombre ausente, email vacío, email inválido y teléfono ausente |
 | Pagos | Pago válido, negativo, cero y fraccionario |
 | Recordatorios | Envío por email y WhatsApp con los datos de `Juanito Pérez` |
 | Colaboradores | Repositorios, notificador por email, notificador por WhatsApp, dummies y mocks |

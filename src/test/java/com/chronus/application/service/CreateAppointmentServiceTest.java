@@ -2,10 +2,10 @@ package com.chronus.application.service;
 
 import com.chronus.application.usecase.CreateAppointmentUseCase;
 import com.chronus.domain.entity.Appointment;
-import com.chronus.domain.exception.InvalidDateAppointmentException;
 import com.chronus.domain.exception.OccupiedAppointmentException;
 import com.chronus.domain.repository.AppointmentRepository;
 import com.chronus.domain.service.AppointmentConflictChecker;
+import com.chronus.domain.valueobject.AppointmentDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @DisplayName("Create appointment service")
@@ -39,24 +38,10 @@ class CreateAppointmentServiceTest {
     }
 
     @Test
-    void shouldRejectPastAppointmentWithoutAccessingRepository() {
-        // Arrange
-        Appointment appointment = new Appointment(LocalDateTime.now().minusDays(1));
-
-        // Act
-        InvalidDateAppointmentException exception = assertThrows(
-                InvalidDateAppointmentException.class,
-                () -> createAppointmentUseCase.createAppointment(appointment));
-
-        // Assert
-        assertEquals("The appointment date and time must be in the future.", exception.getMessage());
-        verifyNoInteractions(appointmentRepository);
-    }
-
-    @Test
     void shouldStoreFutureAppointmentWhenThereIsNoCollision() {
         // Arrange
-        Appointment appointment = new Appointment(LocalDateTime.now().plusMinutes(1));
+        Appointment appointment = new Appointment(
+                new AppointmentDateTime(LocalDateTime.now().plusMinutes(1)));
         when(appointmentRepository.findAll()).thenReturn(List.of());
 
         // Act
@@ -71,8 +56,9 @@ class CreateAppointmentServiceTest {
     void shouldRejectAppointmentWhenDateTimeIsOccupied() {
         // Arrange
         LocalDateTime dateTime = LocalDateTime.now().plusMinutes(1);
-        Appointment existingAppointment = new Appointment(dateTime);
-        Appointment appointment = new Appointment(dateTime);
+        AppointmentDateTime appointmentDateTime = new AppointmentDateTime(dateTime);
+        Appointment existingAppointment = new Appointment(appointmentDateTime);
+        Appointment appointment = new Appointment(appointmentDateTime);
         when(appointmentRepository.findAll()).thenReturn(List.of(existingAppointment));
 
         // Act

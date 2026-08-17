@@ -1,43 +1,48 @@
 package com.chronus.domain.entity;
 
-import com.chronus.domain.exception.InvalidPatientDataException;
+import com.chronus.domain.valueobject.Email;
+import com.chronus.domain.valueobject.PhoneNumber;
 
-/**
- * Domain entity that represents a patient receiving healthcare appointments.
- */
+// entidad de dominio que representa a un paciente que recibe citas de atención médica
 public class Patient {
-    private final String fullName;
-    private final String email;
-    private final String phoneNumber;
+    private final String patientId;
+    private String fullName;
+    private Email email;
+    private PhoneNumber phoneNumber;
 
-    /**
-     * Creates a patient with the contact details required for notifications.
-     */
-    public Patient(String fullName, String email, String phoneNumber) {
-        validateRequired(fullName, "full name");
-        validateRequired(email, "email");
-        validateRequired(phoneNumber, "phone number");
+    // constructor para crear un paciente con los detalles de contacto requeridos
+    // para las notificaciones
+    public Patient(String patientId, String fullName, Email email, PhoneNumber phoneNumber) {
+
+        this.patientId = patientId;
         this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
+    }
+
+    // metodo con semantica de negocio par aactualizar la informacion del paciente
+    public void updateInformation(String fullName, Email email, PhoneNumber phoneNumber) {
+        this.fullName = fullName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+
+    }
+
+    // getters para obtener los detalles del paciente
+    public String getPatientId() {
+        return patientId;
     }
 
     public String getFullName() {
         return fullName;
     }
 
-    public String getEmail() {
+    public Email getEmail() {
         return email;
     }
 
-    public String getPhoneNumber() {
+    public PhoneNumber getPhoneNumber() {
         return phoneNumber;
     }
 
-    private static void validateRequired(String value, String fieldName) {
-        if (value == null || value.isBlank()) {
-            throw new InvalidPatientDataException(
-                    "The patient " + fieldName + " is required.");
-        }
-    }
 }

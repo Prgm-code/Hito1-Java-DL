@@ -7,7 +7,8 @@ import com.chronus.domain.entity.Appointment;
 import com.chronus.domain.entity.Patient;
 
 /**
- * Application service that sends appointment reminders through notification ports.
+ * Application service that sends appointment reminders through notification
+ * ports.
  */
 public class SendAppointmentReminderService implements SendAppointmentReminderUseCase {
     private final EmailNotifier emailNotifier;
@@ -23,8 +24,8 @@ public class SendAppointmentReminderService implements SendAppointmentReminderUs
     @Override
     public void sendReminder(Patient patient, Appointment appointment) {
         String message = "Recordatorio: su cita está programada para "
-                + appointment.getDateTime() + ".";
-        emailNotifier.sendEmail(patient.getEmail(), message);
-        whatsAppNotifier.sendWhatsApp(patient.getPhoneNumber(), message);
+                + appointment.getDateTime().value() + ".";
+        emailNotifier.sendEmail(patient.getEmail().value(), message);
+        whatsAppNotifier.sendWhatsApp(patient.getPhoneNumber().value(), message);
     }
 }

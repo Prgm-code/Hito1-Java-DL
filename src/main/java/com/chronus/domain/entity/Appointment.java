@@ -1,21 +1,23 @@
 package com.chronus.domain.entity;
 
-import java.time.LocalDateTime;
+import com.chronus.domain.valueobject.AppointmentDateTime;
 
+// entidad de dominio que representa una cita de atención médica
 public class Appointment {
-    /** Scheduled appointment date and time. */
-    private final LocalDateTime dateTime;
+    private AppointmentDateTime dateTime;
 
-    /**
-     * Creates an appointment with the provided date and time.
-     * Business rules are validated by the application service.
-     */
-    public Appointment(LocalDateTime dateTime) {
+    // constructor para crear una cita con la fecha y hora requeridas
+    public Appointment(AppointmentDateTime dateTime) {
         this.dateTime = dateTime;
     }
 
-    /** Returns the scheduled appointment date and time. */
-    public LocalDateTime getDateTime() {
+    // metodo con semantica de negocio para actualizar la fecha y hora de la cita
+    public void updateDateTime(AppointmentDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    // getters para obtener los detalles de la cita
+    public AppointmentDateTime getDateTime() {
         return dateTime;
     }
 }

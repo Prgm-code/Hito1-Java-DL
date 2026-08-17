@@ -4,13 +4,15 @@ import com.chronus.application.port.EmailNotifier;
 import com.chronus.application.port.WhatsAppNotifier;
 import com.chronus.application.usecase.AcceptPaymentUseCase;
 import com.chronus.domain.entity.Payment;
-import com.chronus.domain.exception.InvalidPaymentException;
 import com.chronus.domain.repository.PaymentRepository;
 
 /**
  * Application service that validates payments, persists them through
  * {@link PaymentRepository}, and notifies through outbound ports.
  */
+
+// servicio de aplicacion que valida los pagos, los persiste en el repositorio y
+// notifica a través de los puertos de salida
 public class AcceptPaymentService implements AcceptPaymentUseCase {
     private final PaymentRepository paymentRepository;
     private final EmailNotifier emailNotifier;
@@ -25,18 +27,10 @@ public class AcceptPaymentService implements AcceptPaymentUseCase {
         this.whatsAppNotifier = whatsAppNotifier;
     }
 
-    /**
-     * Accepts a payment only when its amount is a strictly positive whole number.
-     * Zero, negative, or fractional amounts raise {@link InvalidPaymentException}
-     * and are not persisted. Valid payments are stored and notified.
-     */
+    // metodo que acepta un pago y lo persiste en el repositorio
     @Override
     public void acceptPayment(Payment payment) {
-        double amount = payment.getAmount();
-        if (amount <= 0 || amount != Math.floor(amount)) {
-            throw new InvalidPaymentException(
-                    "The payment amount must be a positive whole number.");
-        }
+        double amount = payment.getAmount().value();
         paymentRepository.save(payment);
         String message = "Pago de " + (int) amount + " aceptado";
         emailNotifier.sendEmail("patient@chronus.com", message);

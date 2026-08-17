@@ -4,10 +4,7 @@ import com.chronus.domain.entity.Appointment;
 
 import java.util.List;
 
-/**
- * Detects whether a candidate appointment collides with already scheduled ones.
- * The rule needs the collection, so it does not belong to a single entity.
- */
+// servicio de dominio que detecta si una cita candidata colisiona con las citas ya programadas
 public class AppointmentConflictChecker {
     public boolean isOccupied(Appointment candidate, List<Appointment> existingAppointments) {
         return existingAppointments.stream()

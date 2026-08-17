@@ -1,6 +1,7 @@
 package com.chronus.domain.service;
 
 import com.chronus.domain.entity.Appointment;
+import com.chronus.domain.valueobject.AppointmentDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +20,8 @@ class AppointmentConflictCheckerTest {
     @Test
     void shouldDetectOccupiedDateTime() {
         // Arrange
-        LocalDateTime dateTime = LocalDateTime.of(2026, 8, 1, 10, 30);
+        AppointmentDateTime dateTime =
+                new AppointmentDateTime(LocalDateTime.now().plusDays(1));
         Appointment candidate = new Appointment(dateTime);
 
         // Act
@@ -33,11 +35,13 @@ class AppointmentConflictCheckerTest {
     @Test
     void shouldAllowFreeDateTime() {
         // Arrange
-        Appointment candidate = new Appointment(LocalDateTime.of(2026, 8, 1, 11, 0));
+        LocalDateTime dateTime = LocalDateTime.now().plusDays(1);
+        Appointment candidate = new Appointment(
+                new AppointmentDateTime(dateTime.plusMinutes(30)));
 
         // Act
         boolean occupied = appointmentConflictChecker.isOccupied(
-                candidate, List.of(new Appointment(LocalDateTime.of(2026, 8, 1, 10, 30))));
+                candidate, List.of(new Appointment(new AppointmentDateTime(dateTime))));
 
         // Assert
         assertFalse(occupied);
