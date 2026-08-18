@@ -5,10 +5,10 @@ chronus,com.chronus.domain.exception,InvalidDateAppointmentException,0,4,0,0,0,2
 chronus,com.chronus.domain.exception,InvalidPaymentException,0,4,0,0,0,2,0,1,0,1
 chronus,com.chronus.domain.exception,InvalidPhoneNumberException,0,4,0,0,0,2,0,1,0,1
 chronus,com.chronus.domain.exception,InvalidEmailException,0,4,0,0,0,2,0,1,0,1
-chronus,com.chronus.application.usecase,AcceptPaymentUseCase,0,35,0,0,0,11,0,2,0,2
-chronus,com.chronus.application.usecase,SendAppointmentReminderUseCase,0,45,0,2,0,13,0,3,0,2
-chronus,com.chronus.application.usecase,CreatePatientUseCase,0,11,0,0,0,5,0,2,0,2
-chronus,com.chronus.application.usecase,CreateAppointmentUseCase,0,22,0,2,0,7,0,3,0,2
+chronus,com.chronus.application.usecase,AcceptPaymentUseCase,0,47,0,2,0,13,0,3,0,2
+chronus,com.chronus.application.usecase,SendAppointmentReminderUseCase,0,46,0,0,0,12,0,3,0,3
+chronus,com.chronus.application.usecase,CreatePatientUseCase,0,23,0,2,0,7,0,3,0,2
+chronus,com.chronus.application.usecase,CreateAppointmentUseCase,0,23,0,2,0,7,0,3,0,2
 chronus,com.chronus.domain.entity,Payment,0,29,0,0,0,8,0,4,0,4
 chronus,com.chronus.domain.entity,Patient,0,60,0,0,0,14,0,6,0,6
 chronus,com.chronus.domain.entity,Appointment,0,29,0,0,0,8,0,4,0,4
@@ -22,6 +22,6 @@ chronus,com.chronus.domain.valueobject,AppointmentId,0,19,0,4,0,5,0,3,0,1
 chronus,com.chronus.domain.valueobject,Email,0,33,0,6,0,9,0,4,0,1
 chronus,com.chronus.infrastructure.notification,NoOpWhatsAppNotifier,0,4,0,0,0,2,0,2,0,2
 chronus,com.chronus.infrastructure.notification,NoOpEmailNotifier,0,4,0,0,0,2,0,2,0,2
-chronus,com.chronus.infrastructure.persistence,InMemoryPaymentRepository,0,18,0,0,0,5,0,3,0,3
-chronus,com.chronus.infrastructure.persistence,InMemoryPatientRepository,0,34,0,0,0,9,0,5,0,5
-chronus,com.chronus.infrastructure.persistence,InMemoryAppointmentRepository,0,34,0,0,0,9,0,5,0,5
+chronus,com.chronus.infrastructure.persistence,InMemoryPaymentRepository,13,18,0,0,3,5,2,3,2,3
+chronus,com.chronus.infrastructure.persistence,InMemoryPatientRepository,0,31,0,0,0,8,0,5,0,5
+chronus,com.chronus.infrastructure.persistence,InMemoryAppointmentRepository,0,31,0,0,0,8,0,5,0,5

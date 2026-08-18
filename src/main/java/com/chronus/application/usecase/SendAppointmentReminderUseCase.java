@@ -26,10 +26,8 @@ public class SendAppointmentReminderUseCase {
     }
 
     public void execute(String patientId, Appointment appointment) {
-        Patient patient = patientRepository.findById(patientId);
-        if (patient == null) {
-            throw new InvalidPatientDataException("The patient was not found.");
-        }
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new InvalidPatientDataException("The patient was not found."));
 
         String message = "Recordatorio: su cita está programada para "
                 + appointment.getDateTime().value() + ".";

@@ -5,6 +5,8 @@ import com.chronus.domain.repository.PaymentRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * In-memory adapter for {@link PaymentRepository}.
@@ -20,5 +22,12 @@ public class InMemoryPaymentRepository implements PaymentRepository {
     @Override
     public List<Payment> findAll() {
         return List.copyOf(payments);
+    }
+
+    @Override
+    public Optional<Payment> findById(String id) {
+        return payments.stream()
+                .filter(payment -> Objects.equals(payment.getPaymentId(), id))
+                .findFirst();
     }
 }

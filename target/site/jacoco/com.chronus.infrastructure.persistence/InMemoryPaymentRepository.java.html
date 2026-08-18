@@ -5,21 +5,30 @@ import com.chronus.domain.repository.PaymentRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * In-memory adapter for {@link PaymentRepository}.
  */
-<span class="fc" id="L12">public class InMemoryPaymentRepository implements PaymentRepository {</span>
-<span class="fc" id="L13">    private final List&lt;Payment&gt; payments = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L14">public class InMemoryPaymentRepository implements PaymentRepository {</span>
+<span class="fc" id="L15">    private final List&lt;Payment&gt; payments = new ArrayList&lt;&gt;();</span>
 
     @Override
     public void save(Payment payment) {
-<span class="fc" id="L17">        payments.add(payment);</span>
-<span class="fc" id="L18">    }</span>
+<span class="fc" id="L19">        payments.add(payment);</span>
+<span class="fc" id="L20">    }</span>
 
     @Override
     public List&lt;Payment&gt; findAll() {
-<span class="fc" id="L22">        return List.copyOf(payments);</span>
+<span class="fc" id="L24">        return List.copyOf(payments);</span>
+    }
+
+    @Override
+    public Optional&lt;Payment&gt; findById(String id) {
+<span class="nc" id="L29">        return payments.stream()</span>
+<span class="nc" id="L30">                .filter(payment -&gt; Objects.equals(payment.getPaymentId(), id))</span>
+<span class="nc" id="L31">                .findFirst();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

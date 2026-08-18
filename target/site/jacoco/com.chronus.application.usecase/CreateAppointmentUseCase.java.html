@@ -15,7 +15,7 @@ public class CreateAppointmentUseCase {
 <span class="fc" id="L15">    }</span>
 
     public void execute(Appointment appointment) {
-<span class="fc bfc" id="L18" title="All 2 branches covered.">        if (appointmentRepository.findByAppointmentId(appointment.getAppointmentId()) != null) {</span>
+<span class="fc bfc" id="L18" title="All 2 branches covered.">        if (appointmentRepository.findByAppointmentId(appointment.getAppointmentId()).isPresent()) {</span>
 <span class="fc" id="L19">            throw new RuntimeException(&quot;Appointment already exists&quot;);</span>
         }
 <span class="fc" id="L21">        appointmentRepository.save(appointment);</span>

@@ -6,6 +6,7 @@ import com.chronus.domain.repository.PatientRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * In-memory adapter for {@link PatientRepository}.
@@ -19,11 +20,10 @@ public class InMemoryPatientRepository implements PatientRepository {
     }
 
     @Override
-    public Patient findById(String id) {
+    public Optional<Patient> findById(String id) {
         return patients.stream()
                 .filter(patient -> Objects.equals(patient.getPatientId(), id))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.chronus.application.usecase;
 
 import com.chronus.domain.entity.Patient;
+import com.chronus.domain.exception.InvalidPatientDataException;
 import com.chronus.domain.repository.PatientRepository;
 
 /**
@@ -15,6 +16,9 @@ public class CreatePatientUseCase {
     }
 
     public void execute(Patient patient) {
+        if (patientRepository.findById(patient.getPatientId()).isPresent()) {
+            throw new InvalidPatientDataException("Patient already exists");
+        }
         patientRepository.save(patient);
     }
 }

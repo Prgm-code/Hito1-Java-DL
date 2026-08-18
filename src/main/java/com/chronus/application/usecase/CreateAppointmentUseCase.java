@@ -15,7 +15,7 @@ public class CreateAppointmentUseCase {
     }
 
     public void execute(Appointment appointment) {
-        if (appointmentRepository.findByAppointmentId(appointment.getAppointmentId()) != null) {
+        if (appointmentRepository.findByAppointmentId(appointment.getAppointmentId()).isPresent()) {
             throw new RuntimeException("Appointment already exists");
         }
         appointmentRepository.save(appointment);

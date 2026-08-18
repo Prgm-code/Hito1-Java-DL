@@ -3,6 +3,7 @@ package com.chronus.application.usecase;
 import com.chronus.application.port.EmailNotifier;
 import com.chronus.application.port.WhatsAppNotifier;
 import com.chronus.domain.entity.Payment;
+import com.chronus.domain.exception.InvalidPaymentException;
 import com.chronus.domain.repository.PaymentRepository;
 
 /**
@@ -24,6 +25,9 @@ public class AcceptPaymentUseCase {
     }
 
     public void execute(Payment payment) {
+        if (paymentRepository.findById(payment.getPaymentId()).isPresent()) {
+            throw new InvalidPaymentException("Payment already exists");
+        }
         double amount = payment.getAmount().value();
         paymentRepository.save(payment);
         String message = "Pago de " + (int) amount + " aceptado";

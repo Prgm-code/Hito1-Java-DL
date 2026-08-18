@@ -2,65 +2,54 @@ package com.chronus.application.usecase;
 
 import com.chronus.domain.entity.Appointment;
 import com.chronus.domain.repository.AppointmentRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@DisplayName("Create appointment use case")
-@ExtendWith(MockitoExtension.class)
 class CreateAppointmentUseCaseTest {
-
-    @Mock
-    private AppointmentRepository appointmentRepository;
-
-    private CreateAppointmentUseCase createAppointmentUseCase;
-
-    @BeforeEach
-    void setUp() {
-        createAppointmentUseCase = new CreateAppointmentUseCase(appointmentRepository);
-    }
 
     @Test
     void shouldStoreAppointmentWhenIdIsAvailable() {
-        // Arrange
+        // Arrange: crear el mock de la interfaz de dominio
+        AppointmentRepository repositoryMock = Mockito.mock(AppointmentRepository.class);
+        CreateAppointmentUseCase useCase = new CreateAppointmentUseCase(repositoryMock);
         Appointment appointment = new Appointment(
                 "1",
                 LocalDateTime.now().plusMinutes(1));
-        when(appointmentRepository.findByAppointmentId("1")).thenReturn(null);
 
         // Act
-        createAppointmentUseCase.execute(appointment);
+        when(repositoryMock.findByAppointmentId("1")).thenReturn(Optional.empty());
+        useCase.execute(appointment);
 
         // Assert
-        verify(appointmentRepository).findByAppointmentId("1");
-        verify(appointmentRepository).save(appointment);
+        verify(repositoryMock).findByAppointmentId("1");
+        verify(repositoryMock).save(appointment);
     }
 
     @Test
-    void shouldRejectAppointmentWhenIdAlreadyExists() {
-        // Arrange
+    void shouldThrowExceptionWhenAppointmentAlreadyExists() {
+        // Arrange: crear el mock de la interfaz de dominio
+        AppointmentRepository repositoryMock = Mockito.mock(AppointmentRepository.class);
+        CreateAppointmentUseCase useCase = new CreateAppointmentUseCase(repositoryMock);
+
         Appointment appointment = new Appointment(
                 "1",
                 LocalDateTime.now().plusMinutes(1));
-        when(appointmentRepository.findByAppointmentId("1")).thenReturn(appointment);
+        when(repositoryMock.findByAppointmentId("1")).thenReturn(Optional.of(appointment));
 
-        // Act
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> createAppointmentUseCase.execute(appointment));
+        // Act: ejecutar el use case & Assert: verificar el resultado
+        assertThrows(RuntimeException.class, () -> {
+            useCase.execute(appointment);
+        });
 
-        // Assert
-        assertEquals("Appointment already exists", exception.getMessage());
-        verify(appointmentRepository).findByAppointmentId("1");
+        verify(repositoryMock, never()).save(any());
     }
 }

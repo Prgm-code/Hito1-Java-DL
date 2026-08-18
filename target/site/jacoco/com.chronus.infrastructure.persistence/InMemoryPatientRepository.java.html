@@ -6,24 +6,24 @@ import com.chronus.domain.repository.PatientRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * In-memory adapter for {@link PatientRepository}.
  */
-<span class="fc" id="L13">public class InMemoryPatientRepository implements PatientRepository {</span>
-<span class="fc" id="L14">    private final List&lt;Patient&gt; patients = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L14">public class InMemoryPatientRepository implements PatientRepository {</span>
+<span class="fc" id="L15">    private final List&lt;Patient&gt; patients = new ArrayList&lt;&gt;();</span>
 
     @Override
     public void save(Patient patient) {
-<span class="fc" id="L18">        patients.add(patient);</span>
-<span class="fc" id="L19">    }</span>
+<span class="fc" id="L19">        patients.add(patient);</span>
+<span class="fc" id="L20">    }</span>
 
     @Override
-    public Patient findById(String id) {
-<span class="fc" id="L23">        return patients.stream()</span>
-<span class="fc" id="L24">                .filter(patient -&gt; Objects.equals(patient.getPatientId(), id))</span>
-<span class="fc" id="L25">                .findFirst()</span>
-<span class="fc" id="L26">                .orElse(null);</span>
+    public Optional&lt;Patient&gt; findById(String id) {
+<span class="fc" id="L24">        return patients.stream()</span>
+<span class="fc" id="L25">                .filter(patient -&gt; Objects.equals(patient.getPatientId(), id))</span>
+<span class="fc" id="L26">                .findFirst();</span>
     }
 
     @Override

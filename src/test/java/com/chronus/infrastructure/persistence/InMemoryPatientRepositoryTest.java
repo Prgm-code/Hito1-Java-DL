@@ -6,9 +6,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("In-memory patient repository")
@@ -45,21 +46,21 @@ class InMemoryPatientRepositoryTest {
         patientRepository.save(patient);
 
         // Act
-        Patient foundPatient = patientRepository.findById("123");
+        Optional<Patient> foundPatient = patientRepository.findById("123");
 
         // Assert
-        assertEquals(patient, foundPatient);
+        assertEquals(Optional.of(patient), foundPatient);
     }
 
     @Test
-    void shouldReturnNullWhenPatientIdDoesNotExist() {
+    void shouldReturnEmptyWhenPatientIdDoesNotExist() {
         // Arrange
         PatientRepository patientRepository = new InMemoryPatientRepository();
 
         // Act
-        Patient foundPatient = patientRepository.findById("999");
+        Optional<Patient> foundPatient = patientRepository.findById("999");
 
         // Assert
-        assertNull(foundPatient);
+        assertTrue(foundPatient.isEmpty());
     }
 }

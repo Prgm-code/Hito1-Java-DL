@@ -6,82 +6,71 @@ import com.chronus.domain.entity.Appointment;
 import com.chronus.domain.entity.Patient;
 import com.chronus.domain.exception.InvalidPatientDataException;
 import com.chronus.domain.repository.PatientRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@DisplayName("Send appointment reminder use case")
-@ExtendWith(MockitoExtension.class)
 class SendAppointmentReminderUseCaseTest {
 
-    @Mock
-    private PatientRepository patientRepository;
+        @Test
+        void shouldSendReminderUsingPatientContactData() {
+                // Arrange: crear el mock de la interfaz de dominio
+                PatientRepository repositoryMock = Mockito.mock(PatientRepository.class);
+                EmailNotifier emailNotifierMock = Mockito.mock(EmailNotifier.class);
+                WhatsAppNotifier whatsAppNotifierMock = Mockito.mock(WhatsAppNotifier.class);
+                SendAppointmentReminderUseCase useCase = new SendAppointmentReminderUseCase(
+                                repositoryMock,
+                                emailNotifierMock,
+                                whatsAppNotifierMock);
+                Patient patient = new Patient(
+                                "123",
+                                "Juanito Pérez",
+                                "juanito.perez@example.com",
+                                "+56912345678");
+                LocalDateTime dateTime = LocalDateTime.now().plusDays(1).withNano(0);
+                Appointment appointment = new Appointment("1", dateTime);
+                String message = "Recordatorio: su cita está programada para " + dateTime + ".";
 
-    @Mock
-    private EmailNotifier emailNotifier;
+                // Act
+                when(repositoryMock.findById("123")).thenReturn(Optional.of(patient));
+                useCase.execute("123", appointment);
 
-    @Mock
-    private WhatsAppNotifier whatsAppNotifier;
+                // Assert
+                verify(repositoryMock).findById("123");
+                verify(emailNotifierMock).sendEmail("juanito.perez@example.com", message);
+                verify(whatsAppNotifierMock).sendWhatsApp("+56912345678", message);
+        }
 
-    private SendAppointmentReminderUseCase sendAppointmentReminderUseCase;
+        @Test
+        void shouldThrowExceptionWhenPatientDoesNotExist() {
+                // Arrange: crear el mock de la interfaz de dominio
+                PatientRepository repositoryMock = Mockito.mock(PatientRepository.class);
+                EmailNotifier emailNotifierMock = Mockito.mock(EmailNotifier.class);
+                WhatsAppNotifier whatsAppNotifierMock = Mockito.mock(WhatsAppNotifier.class);
+                SendAppointmentReminderUseCase useCase = new SendAppointmentReminderUseCase(
+                                repositoryMock,
+                                emailNotifierMock,
+                                whatsAppNotifierMock);
 
-    @BeforeEach
-    void setUp() {
-        sendAppointmentReminderUseCase = new SendAppointmentReminderUseCase(
-                patientRepository, emailNotifier, whatsAppNotifier);
-    }
+                Appointment appointment = new Appointment(
+                                "1",
+                                LocalDateTime.now().plusDays(1));
+                when(repositoryMock.findById("999")).thenReturn(Optional.empty());
 
-    @Test
-    void shouldSendReminderUsingPatientContactData() {
-        // Arrange
-        Patient patient = new Patient(
-                "123",
-                "Juanito Pérez",
-                "juanito.perez@example.com",
-                "+56912345678");
-        LocalDateTime dateTime = LocalDateTime.now().plusDays(1).withNano(0);
-        Appointment appointment = new Appointment("1", dateTime);
-        String message = "Recordatorio: su cita está programada para " + dateTime + ".";
-        when(patientRepository.findById("123")).thenReturn(patient);
+                // Act: ejecutar el use case & Assert: verificar el resultado
+                assertThrows(InvalidPatientDataException.class, () -> {
+                        useCase.execute("999", appointment);
+                });
 
-        // Act
-        sendAppointmentReminderUseCase.execute("123", appointment);
-
-        // Assert
-        verify(patientRepository).findById("123");
-        verify(emailNotifier).sendEmail("juanito.perez@example.com", message);
-        verify(whatsAppNotifier).sendWhatsApp("+56912345678", message);
-    }
-
-    @Test
-    void shouldRejectReminderWhenPatientDoesNotExist() {
-        // Arrange
-        Appointment appointment = new Appointment(
-                "1",
-                LocalDateTime.now().plusDays(1));
-        when(patientRepository.findById("999")).thenReturn(null);
-
-        // Act
-        InvalidPatientDataException exception = assertThrows(
-                InvalidPatientDataException.class,
-                () -> sendAppointmentReminderUseCase.execute("999", appointment));
-
-        // Assert
-        assertEquals("The patient was not found.", exception.getMessage());
-        verify(patientRepository).findById("999");
-        verify(emailNotifier, never()).sendEmail(anyString(), anyString());
-        verify(whatsAppNotifier, never()).sendWhatsApp(anyString(), anyString());
-    }
+                verify(emailNotifierMock, never()).sendEmail(anyString(), anyString());
+                verify(whatsAppNotifierMock, never()).sendWhatsApp(anyString(), anyString());
+        }
 }

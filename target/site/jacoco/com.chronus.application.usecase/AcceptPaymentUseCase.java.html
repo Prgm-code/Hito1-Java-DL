@@ -3,6 +3,7 @@
 import com.chronus.application.port.EmailNotifier;
 import com.chronus.application.port.WhatsAppNotifier;
 import com.chronus.domain.entity.Payment;
+import com.chronus.domain.exception.InvalidPaymentException;
 import com.chronus.domain.repository.PaymentRepository;
 
 /**
@@ -17,18 +18,21 @@ public class AcceptPaymentUseCase {
     public AcceptPaymentUseCase(
             PaymentRepository paymentRepository,
             EmailNotifier emailNotifier,
-<span class="fc" id="L20">            WhatsAppNotifier whatsAppNotifier) {</span>
-<span class="fc" id="L21">        this.paymentRepository = paymentRepository;</span>
-<span class="fc" id="L22">        this.emailNotifier = emailNotifier;</span>
-<span class="fc" id="L23">        this.whatsAppNotifier = whatsAppNotifier;</span>
-<span class="fc" id="L24">    }</span>
+<span class="fc" id="L21">            WhatsAppNotifier whatsAppNotifier) {</span>
+<span class="fc" id="L22">        this.paymentRepository = paymentRepository;</span>
+<span class="fc" id="L23">        this.emailNotifier = emailNotifier;</span>
+<span class="fc" id="L24">        this.whatsAppNotifier = whatsAppNotifier;</span>
+<span class="fc" id="L25">    }</span>
 
     public void execute(Payment payment) {
-<span class="fc" id="L27">        double amount = payment.getAmount().value();</span>
-<span class="fc" id="L28">        paymentRepository.save(payment);</span>
-<span class="fc" id="L29">        String message = &quot;Pago de &quot; + (int) amount + &quot; aceptado&quot;;</span>
-<span class="fc" id="L30">        emailNotifier.sendEmail(&quot;patient@chronus.com&quot;, message);</span>
-<span class="fc" id="L31">        whatsAppNotifier.sendWhatsApp(&quot;+56900000000&quot;, message);</span>
-<span class="fc" id="L32">    }</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (paymentRepository.findById(payment.getPaymentId()).isPresent()) {</span>
+<span class="fc" id="L29">            throw new InvalidPaymentException(&quot;Payment already exists&quot;);</span>
+        }
+<span class="fc" id="L31">        double amount = payment.getAmount().value();</span>
+<span class="fc" id="L32">        paymentRepository.save(payment);</span>
+<span class="fc" id="L33">        String message = &quot;Pago de &quot; + (int) amount + &quot; aceptado&quot;;</span>
+<span class="fc" id="L34">        emailNotifier.sendEmail(&quot;patient@chronus.com&quot;, message);</span>
+<span class="fc" id="L35">        whatsAppNotifier.sendWhatsApp(&quot;+56900000000&quot;, message);</span>
+<span class="fc" id="L36">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

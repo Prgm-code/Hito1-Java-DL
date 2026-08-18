@@ -7,9 +7,10 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("In-memory appointment repository")
@@ -42,21 +43,21 @@ class InMemoryAppointmentRepositoryTest {
         appointmentRepository.save(appointment);
 
         // Act
-        Appointment foundAppointment = appointmentRepository.findByAppointmentId("1");
+        Optional<Appointment> foundAppointment = appointmentRepository.findByAppointmentId("1");
 
         // Assert
-        assertEquals(appointment, foundAppointment);
+        assertEquals(Optional.of(appointment), foundAppointment);
     }
 
     @Test
-    void shouldReturnNullWhenAppointmentIdDoesNotExist() {
+    void shouldReturnEmptyWhenAppointmentIdDoesNotExist() {
         // Arrange
         AppointmentRepository appointmentRepository = new InMemoryAppointmentRepository();
 
         // Act
-        Appointment foundAppointment = appointmentRepository.findByAppointmentId("999");
+        Optional<Appointment> foundAppointment = appointmentRepository.findByAppointmentId("999");
 
         // Assert
-        assertNull(foundAppointment);
+        assertTrue(foundAppointment.isEmpty());
     }
 }

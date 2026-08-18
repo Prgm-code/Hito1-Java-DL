@@ -26,15 +26,13 @@ public class SendAppointmentReminderUseCase {
 <span class="fc" id="L26">    }</span>
 
     public void execute(String patientId, Appointment appointment) {
-<span class="fc" id="L29">        Patient patient = patientRepository.findById(patientId);</span>
-<span class="fc bfc" id="L30" title="All 2 branches covered.">        if (patient == null) {</span>
-<span class="fc" id="L31">            throw new InvalidPatientDataException(&quot;The patient was not found.&quot;);</span>
-        }
+<span class="fc" id="L29">        Patient patient = patientRepository.findById(patientId)</span>
+<span class="fc" id="L30">                .orElseThrow(() -&gt; new InvalidPatientDataException(&quot;The patient was not found.&quot;));</span>
 
-<span class="fc" id="L34">        String message = &quot;Recordatorio: su cita está programada para &quot;</span>
-<span class="fc" id="L35">                + appointment.getDateTime().value() + &quot;.&quot;;</span>
-<span class="fc" id="L36">        emailNotifier.sendEmail(patient.getEmail().value(), message);</span>
-<span class="fc" id="L37">        whatsAppNotifier.sendWhatsApp(patient.getPhoneNumber().value(), message);</span>
-<span class="fc" id="L38">    }</span>
+<span class="fc" id="L32">        String message = &quot;Recordatorio: su cita está programada para &quot;</span>
+<span class="fc" id="L33">                + appointment.getDateTime().value() + &quot;.&quot;;</span>
+<span class="fc" id="L34">        emailNotifier.sendEmail(patient.getEmail().value(), message);</span>
+<span class="fc" id="L35">        whatsAppNotifier.sendWhatsApp(patient.getPhoneNumber().value(), message);</span>
+<span class="fc" id="L36">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

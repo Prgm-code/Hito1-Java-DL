@@ -3,6 +3,7 @@ package com.chronus.domain.repository;
 import com.chronus.domain.entity.Appointment;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Persistence contract for appointments. Implementations live in
@@ -13,5 +14,5 @@ public interface AppointmentRepository {
 
     List<Appointment> findAll();
 
-    Appointment findByAppointmentId(String appointmentId);
+    Optional<Appointment> findByAppointmentId(String appointmentId);
 }
