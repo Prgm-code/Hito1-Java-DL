@@ -1,7 +1,7 @@
 package com.chronus.application.usecase;
 
-import com.chronus.application.port.EmailNotifier;
-import com.chronus.application.port.WhatsAppNotifier;
+import com.chronus.application.service.EmailNotifier;
+import com.chronus.application.service.WhatsAppNotifier;
 import com.chronus.domain.entity.Payment;
 import com.chronus.domain.exception.InvalidPaymentException;
 import com.chronus.domain.repository.PaymentRepository;

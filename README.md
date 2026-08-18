@@ -23,7 +23,7 @@ La entrega se revisa contra los tres criterios de la rúbrica compartida.
 El código está separado en tres capas:
 
 - `domain`: entidades, value objects, excepciones, servicios de dominio y contratos de repositorio.
-- `application`: casos de uso y puertos de entrada y salida.
+- `application`: casos de uso y servicios de notificación.
 - `infrastructure`: adaptadores de persistencia y notificación.
 
 El dominio no depende de aplicación ni infraestructura. El dominio y la aplicación tampoco importan Spring, JPA, Jackson u otros frameworks externos.
@@ -45,7 +45,7 @@ Cada value object valida sus reglas en el constructor compacto. Las entidades ma
 
 ### 3. Desacoplamiento por contratos de repositorios
 
-`AppointmentRepository`, `PatientRepository` y `PaymentRepository` viven en `domain.repository` y funcionan como contratos de persistencia. Sus implementaciones en memoria viven en `infrastructure.persistence`. Los casos de uso reciben repositorios y puertos mediante inyección por constructor.
+`AppointmentRepository`, `PatientRepository` y `PaymentRepository` viven en `domain.repository` y funcionan como contratos de persistencia. Sus implementaciones en memoria viven en `infrastructure.persistence`. Los casos de uso reciben repositorios y servicios mediante inyección por constructor.
 
 ---
 
@@ -67,7 +67,7 @@ El núcleo de la aplicación se orquesta desde `CreatePatientUseCase`, `CreateAp
 - **Java puro en el núcleo:** `domain` y `application` no usan Spring, JPA ni Jackson. No hay `@Service`, `@Repository` ni `@Entity` de framework.
 - **Casos de uso concretos:** cada acción de negocio es una clase en `application.usecase` que recibe sus dependencias mediante el constructor y expone `execute(...)`.
 - **Repositorios como frontera:** las interfaces viven en `domain.repository`. Las listas en memoria están en `infrastructure.persistence`, incluyendo la creación y consulta de pacientes.
-- **Inyección por constructor:** los casos de uso reciben repositorios y puertos de notificación, nunca las clases concretas.
+- **Inyección por constructor:** los casos de uso reciben repositorios y servicios de notificación, nunca las clases concretas.
 - **Doubles de prueba:** la suite usa mocks de Mockito para los casos de uso y repositorios en memoria para las pruebas de persistencia.
 - **Regla de dependencia:** `ArchitectureTest` (ArchUnit) falla el build si dominio o aplicación se acopla a infraestructura o a un framework.
 
@@ -130,25 +130,84 @@ target/site/jacoco/index.html
 
 ```text
 chronus/
-├── src/main/java/com/chronus/
-│   ├── application/
-│   │   ├── port/          EmailNotifier, WhatsAppNotifier
-│   │   └── usecase/       CreatePatientUseCase, CreateAppointmentUseCase,
-│   │                      AcceptPaymentUseCase, SendAppointmentReminderUseCase
-│   ├── domain/
-│   │   ├── entity/        Appointment, Patient, Payment
-│   │   ├── exception/
-│   │   ├── repository/    interfaces AppointmentRepository, PatientRepository,
-│   │   │                  PaymentRepository
-│   │   ├── service/       AppointmentConflictChecker
-│   │   └── valueobject/   PatientId, FullName, Email, PhoneNumber,
-│   │                      AppointmentId, AppointmentDateTime,
-│   │                      PaymentId, PaymentAmount
-│   └── infrastructure/
-│       ├── notification/  NoOpEmailNotifier, NoOpWhatsAppNotifier
-│       └── persistence/   InMemoryAppointmentRepository, InMemoryPatientRepository,
-│                          InMemoryPaymentRepository
-└── src/test/java/com/chronus/   espejo de los mismos paquetes
+├── pom.xml
+├── README.md
+└── src/
+    ├── main/java/com/chronus/
+    │   ├── application/
+    │   │   ├── service/
+    │   │   │   ├── EmailNotifier.java
+    │   │   │   └── WhatsAppNotifier.java
+    │   │   └── usecase/
+    │   │       ├── AcceptPaymentUseCase.java
+    │   │       ├── CreateAppointmentUseCase.java
+    │   │       ├── CreatePatientUseCase.java
+    │   │       └── SendAppointmentReminderUseCase.java
+    │   ├── domain/
+    │   │   ├── entity/
+    │   │   │   ├── Appointment.java
+    │   │   │   ├── Patient.java
+    │   │   │   └── Payment.java
+    │   │   ├── exception/
+    │   │   │   ├── InvalidDateAppointmentException.java
+    │   │   │   ├── InvalidEmailException.java
+    │   │   │   ├── InvalidPatientDataException.java
+    │   │   │   ├── InvalidPaymentException.java
+    │   │   │   └── InvalidPhoneNumberException.java
+    │   │   ├── repository/
+    │   │   │   ├── AppointmentRepository.java
+    │   │   │   ├── PatientRepository.java
+    │   │   │   └── PaymentRepository.java
+    │   │   ├── service/
+    │   │   │   └── AppointmentConflictChecker.java
+    │   │   └── valueobject/
+    │   │       ├── AppointmentDateTime.java
+    │   │       ├── AppointmentId.java
+    │   │       ├── Email.java
+    │   │       ├── FullName.java
+    │   │       ├── PatientId.java
+    │   │       ├── PaymentAmount.java
+    │   │       ├── PaymentId.java
+    │   │       └── PhoneNumber.java
+    │   └── infrastructure/
+    │       ├── notification/
+    │       │   ├── NoOpEmailNotifier.java
+    │       │   └── NoOpWhatsAppNotifier.java
+    │       └── persistence/
+    │           ├── InMemoryAppointmentRepository.java
+    │           ├── InMemoryPatientRepository.java
+    │           └── InMemoryPaymentRepository.java
+    └── test/java/com/chronus/
+        ├── ArchitectureTest.java
+        ├── application/usecase/
+        │   ├── AcceptPaymentUseCaseTest.java
+        │   ├── CreateAppointmentUseCaseTest.java
+        │   ├── CreatePatientUseCaseTest.java
+        │   └── SendAppointmentReminderUseCaseTest.java
+        ├── domain/
+        │   ├── entity/
+        │   │   ├── AppointmentTest.java
+        │   │   ├── PatientTest.java
+        │   │   └── PaymentTest.java
+        │   ├── service/
+        │   │   └── AppointmentConflictCheckerTest.java
+        │   └── valueobject/
+        │       ├── AppointmentDateTimeTest.java
+        │       ├── AppointmentIdTest.java
+        │       ├── EmailTest.java
+        │       ├── FullNameTest.java
+        │       ├── PatientIdTest.java
+        │       ├── PaymentAmountTest.java
+        │       ├── PaymentIdTest.java
+        │       └── PhoneNumberTest.java
+        └── infrastructure/
+            ├── notification/
+            │   ├── NoOpEmailNotifierTest.java
+            │   └── NoOpWhatsAppNotifierTest.java
+            └── persistence/
+                ├── InMemoryAppointmentRepositoryTest.java
+                ├── InMemoryPatientRepositoryTest.java
+                └── InMemoryPaymentRepositoryTest.java
 ```
 
 ---

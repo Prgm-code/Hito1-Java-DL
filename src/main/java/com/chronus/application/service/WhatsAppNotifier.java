@@ -1,7 +1,7 @@
-package com.chronus.application.port;
+package com.chronus.application.service;
 
 /**
- * Outbound port for WhatsApp notifications.
+ * Outbound service for WhatsApp notifications.
  */
 public interface WhatsAppNotifier {
     void sendWhatsApp(String phone, String message);

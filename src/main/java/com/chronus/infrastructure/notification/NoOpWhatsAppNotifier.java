@@ -1,6 +1,6 @@
 package com.chronus.infrastructure.notification;
 
-import com.chronus.application.port.WhatsAppNotifier;
+import com.chronus.application.service.WhatsAppNotifier;
 
 /**
  * WhatsApp adapter used until a real messaging gateway is wired.

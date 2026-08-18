@@ -1,6 +1,6 @@
 package com.chronus.infrastructure.notification;
 
-import com.chronus.application.port.WhatsAppNotifier;
+import com.chronus.application.service.WhatsAppNotifier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

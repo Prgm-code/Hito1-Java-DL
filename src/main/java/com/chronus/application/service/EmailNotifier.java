@@ -1,7 +1,7 @@
-package com.chronus.application.port;
+package com.chronus.application.service;
 
 /**
- * Outbound port for email notifications.
+ * Outbound service for email notifications.
  */
 public interface EmailNotifier {
     void sendEmail(String email, String message);
