@@ -22,6 +22,6 @@ chronus,com.chronus.domain.valueobject,AppointmentId,0,19,0,4,0,5,0,3,0,1
 chronus,com.chronus.domain.valueobject,Email,0,33,0,6,0,9,0,4,0,1
 chronus,com.chronus.infrastructure.notification,NoOpWhatsAppNotifier,0,4,0,0,0,2,0,2,0,2
 chronus,com.chronus.infrastructure.notification,NoOpEmailNotifier,0,4,0,0,0,2,0,2,0,2
-chronus,com.chronus.infrastructure.persistence,InMemoryPaymentRepository,13,18,0,0,3,5,2,3,2,3
+chronus,com.chronus.infrastructure.persistence,InMemoryPaymentRepository,0,31,0,0,0,8,0,5,0,5
 chronus,com.chronus.infrastructure.persistence,InMemoryPatientRepository,0,31,0,0,0,8,0,5,0,5
 chronus,com.chronus.infrastructure.persistence,InMemoryAppointmentRepository,0,31,0,0,0,8,0,5,0,5
